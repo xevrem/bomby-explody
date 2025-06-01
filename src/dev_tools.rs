@@ -5,21 +5,52 @@ use bevy::{
     ui::UiDebugOptions,
 };
 
+use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
+
 use crate::screens::Screen;
 
-pub(super) fn plugin(app: &mut App) {
-    // Log `Screen` state transitions.
-    app.add_systems(Update, log_transitions::<Screen>);
+#[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
+pub(super) enum DebugState {
+    ON,
+    #[default]
+    OFF,
+}
 
-    // Toggle the debug overlay for UI.
-    app.add_systems(
-        Update,
-        toggle_debug_ui.run_if(input_just_pressed(TOGGLE_KEY)),
-    );
+pub(super) fn plugin(app: &mut App) {
+    app.init_state::<DebugState>()
+        .add_systems(
+            Update,
+            (
+                toggle_debug_on
+                    .run_if(input_just_pressed(TOGGLE_KEY).and(in_state(DebugState::OFF))),
+                toggle_debug_off
+                    .run_if(input_just_pressed(TOGGLE_KEY).and(in_state(DebugState::ON))),
+            ),
+        )
+        // setup bevy inspector
+        .add_plugins(EguiPlugin {
+            enable_multipass_for_primary_context: true,
+        })
+        .add_plugins(WorldInspectorPlugin::new().run_if(in_state(DebugState::ON)))
+        // Log `Screen` state transitions.
+        .add_systems(Update, log_transitions::<Screen>)
+        // Toggle the debug overlay for UI.
+        .add_systems(
+            Update,
+            toggle_debug_ui.run_if(input_just_pressed(TOGGLE_KEY)),
+        );
 }
 
 const TOGGLE_KEY: KeyCode = KeyCode::Backquote;
 
 fn toggle_debug_ui(mut options: ResMut<UiDebugOptions>) {
     options.toggle();
+}
+
+fn toggle_debug_off(mut debug: ResMut<NextState<DebugState>>) {
+    debug.set(DebugState::OFF);
+}
+
+fn toggle_debug_on(mut debug: ResMut<NextState<DebugState>>) {
+    debug.set(DebugState::ON);
 }
