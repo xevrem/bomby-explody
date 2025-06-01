@@ -45,9 +45,7 @@
 
           LIBCLANG_PATH = pkgs.lib.makeLibraryPath [ pkgs.llvmPackages_latest.libclang.lib ];
           RUSTC_VERSION = "nightly-2025-04-03";
-          # RUSTC_VERSION = overrides.toolchain.channel;
           LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath libInputs}";
-          # RUST_SRC_PATH = rustPlatform.rustLibSrc;
           PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
 
           shellHook = ''

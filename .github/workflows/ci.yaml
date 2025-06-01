@@ -12,10 +12,13 @@ concurrency:
 
 env:
   # Reduce compile time and cache size.
-  RUSTFLAGS: -Dwarnings -Zshare-generics=y -Zthreads=0
-  RUSTDOCFLAGS: -Dwarnings -Zshare-generics=y -Zthreads=0
+  # RUSTFLAGS: -Dwarnings -Zshare-generics=y -Zthreads=0
+  # RUSTDOCFLAGS: -Dwarnings -Zshare-generics=y -Zthreads=0
+  RUSTFLAGS: -Dwarnings
+  RUSTDOCFLAGS: -Dwarnings
   # Use the same Rust toolchain across jobs so they can share a cache.
-  toolchain: nightly-2025-04-03
+  # toolchain: nightly-2025-04-03
+  toolchain: 1.87.0
 
 jobs:
   # Check formatting.
