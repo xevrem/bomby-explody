@@ -6,7 +6,6 @@ edition = "2024"
 
 [dependencies]
 bevy = { version = "0.16", features = ["wayland"] }
-rand = "0.8"
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4", features = [
     "max_level_debug",
@@ -18,6 +17,13 @@ tracing = { version = "0.1", features = [
     "release_max_level_warn",
 ] }
 bevy-inspector-egui = "0.31.0"
+bevy_enhanced_input = "0.12.0"
+bevy_asset_loader = { version = "0.23.0", features = ["2d", "progress_tracking"] }
+avian2d = "0.3.0"
+bevy-tnua-avian2d = "0.5.0"
+bevy_rand = "0.11.0"
+bevy_prng = { version = "0.11.0", features = ["wyrand"] }
+rand = "0.9.1"
 
 # Your web builds will start failing if you add a dependency that pulls in `getrandom` v0.3+.
 # To fix this, you should tell `getrandom` to use the `wasm_js` backend on Wasm.
@@ -93,10 +99,6 @@ opt-level = 1
 # Enable a large amount of optimization in the dev profile for dependencies.
 [profile.dev.package."*"]
 opt-level = 3
-
-# Remove expensive debug assertions due to <https://github.com/bevyengine/bevy/issues/14291>
-[profile.dev.package.wgpu-types]
-debug-assertions = false
 
 [profile.release]
 # Compile the entire crate as one unit.
