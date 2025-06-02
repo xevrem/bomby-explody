@@ -4,14 +4,17 @@
 //! - [Sprite animation](https://github.com/bevyengine/bevy/blob/latest/examples/2d/sprite_animation.rs)
 //! - [Timers](https://github.com/bevyengine/bevy/blob/latest/examples/time/timers.rs)
 
-use bevy::prelude::*;
-use rand::prelude::*;
 use std::time::Duration;
 
+use bevy::prelude::*;
+use bevy_prng::WyRand;
+use bevy_rand::global::GlobalEntropy;
+use rand::prelude::*;
+
 use crate::{
-    AppSystems, PausableSystems,
     audio::sound_effect,
     demo::{movement::MovementController, player::PlayerAssets},
+    AppSystems, PausableSystems,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -78,15 +81,18 @@ fn trigger_step_sound_effect(
     mut commands: Commands,
     player_assets: Res<PlayerAssets>,
     mut step_query: Query<&PlayerAnimation>,
+    mut entropy: GlobalEntropy<WyRand>,
 ) {
     for animation in &mut step_query {
         if animation.state == PlayerAnimationState::Walking
             && animation.changed()
             && (animation.frame == 2 || animation.frame == 5)
         {
-            let rng = &mut rand::thread_rng();
-            let random_step = player_assets.steps.choose(rng).unwrap().clone();
-            commands.spawn(sound_effect(random_step));
+            if let Some(random_step) = player_assets.steps.choose(entropy.as_mut()) {
+                commands.spawn(sound_effect(random_step.clone()));
+            } else {
+                warn!("nuuuuuu");
+            }
         }
     }
 }

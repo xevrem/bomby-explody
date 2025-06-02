@@ -3,12 +3,16 @@
 // Disable console on Windows for non-dev builds.
 #![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
-mod asset_tracking;
+// mod asset_tracking;
+mod assets;
 mod audio;
 mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod input;
 mod menus;
+mod physics;
+mod random;
 mod screens;
 mod theme;
 
@@ -42,10 +46,17 @@ impl Plugin for AppPlugin {
                     ..default()
                 }),
         );
+        // 3rd party plugins
+        app.add_plugins((
+            assets::plugin,
+            physics::plugin,
+            input::plugin,
+            random::plugin,
+        ));
 
         // Add other plugins.
         app.add_plugins((
-            asset_tracking::plugin,
+            // asset_tracking::plugin,
             audio::plugin,
             demo::plugin,
             #[cfg(feature = "dev")]
@@ -96,6 +107,17 @@ struct Pause(pub bool);
 /// A system set for systems that shouldn't run while the game is paused.
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
 struct PausableSystems;
+
+// #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
+// pub enum GameState {
+//     #[default]
+//     Startup,
+//     AssetLoading,
+//     AssetLoadingDone,
+//     Setup,
+//     MainMenu,
+//     Gameplay,
+// }
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((Name::new("Camera"), Camera2d));

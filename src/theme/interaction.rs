@@ -1,13 +1,17 @@
 use bevy::prelude::*;
+use bevy_asset_loader::prelude::*;
 
-use crate::{asset_tracking::LoadResource, audio::sound_effect};
+use crate::{assets::AssetsState, audio::sound_effect};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<InteractionPalette>();
+    app.configure_loading_state(
+        LoadingStateConfig::new(AssetsState::Unloaded).load_collection::<InteractionAssets>(),
+    );
     app.add_systems(Update, apply_interaction_palette);
 
-    app.register_type::<InteractionAssets>();
-    app.load_resource::<InteractionAssets>();
+    // app.register_type::<InteractionAssets>();
+    // app.load_resource::<InteractionAssets>();
     app.add_observer(play_on_hover_sound_effect);
     app.add_observer(play_on_click_sound_effect);
 }
@@ -39,24 +43,25 @@ fn apply_interaction_palette(
     }
 }
 
-#[derive(Resource, Asset, Clone, Reflect)]
-#[reflect(Resource)]
-struct InteractionAssets {
-    #[dependency]
+// #[derive(Resource, Asset, Clone, Reflect)]
+// #[reflect(Resource)]
+#[derive(AssetCollection, Resource)]
+pub struct InteractionAssets {
+    #[asset(path = "audio/sound_effects/button_hover.ogg")]
     hover: Handle<AudioSource>,
-    #[dependency]
+    #[asset(path = "audio/sound_effects/button_click.ogg")]
     click: Handle<AudioSource>,
 }
 
-impl FromWorld for InteractionAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            hover: assets.load("audio/sound_effects/button_hover.ogg"),
-            click: assets.load("audio/sound_effects/button_click.ogg"),
-        }
-    }
-}
+// impl FromWorld for InteractionAssets {
+//     fn from_world(world: &mut World) -> Self {
+//         let assets = world.resource::<AssetServer>();
+//         Self {
+//             hover: assets.load("audio/sound_effects/button_hover.ogg"),
+//             click: assets.load("audio/sound_effects/button_click.ogg"),
+//         }
+//     }
+// }
 
 fn play_on_hover_sound_effect(
     trigger: Trigger<Pointer<Over>>,

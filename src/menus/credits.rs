@@ -3,18 +3,23 @@
 use bevy::{
     ecs::spawn::SpawnIter, input::common_conditions::input_just_pressed, prelude::*, ui::Val::*,
 };
+use bevy_asset_loader::prelude::*;
 
-use crate::{asset_tracking::LoadResource, audio::music, menus::Menu, theme::prelude::*};
+use crate::{assets::AssetsState, audio::music, menus::Menu, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
+    app.configure_loading_state(
+        LoadingStateConfig::new(AssetsState::Unloaded).load_collection::<CreditsAssets>(),
+    );
+
     app.add_systems(OnEnter(Menu::Credits), spawn_credits_menu);
     app.add_systems(
         Update,
         go_back.run_if(in_state(Menu::Credits).and(input_just_pressed(KeyCode::Escape))),
     );
 
-    app.register_type::<CreditsAssets>();
-    app.load_resource::<CreditsAssets>();
+    // app.register_type::<CreditsAssets>();
+    // app.load_resource::<CreditsAssets>();
     app.add_systems(OnEnter(Menu::Credits), start_credits_music);
 }
 
@@ -88,21 +93,20 @@ fn go_back(mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(Menu::Main);
 }
 
-#[derive(Resource, Asset, Clone, Reflect)]
-#[reflect(Resource)]
+#[derive(Resource, AssetCollection)]
 struct CreditsAssets {
-    #[dependency]
+    #[asset(path = "audio/music/Monkeys Spinning Monkeys.ogg")]
     music: Handle<AudioSource>,
 }
 
-impl FromWorld for CreditsAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            music: assets.load("audio/music/Monkeys Spinning Monkeys.ogg"),
-        }
-    }
-}
+// impl FromWorld for CreditsAssets {
+//     fn from_world(world: &mut World) -> Self {
+//         let assets = world.resource::<AssetServer>();
+//         Self {
+//             music: assets.load("audio/music/Monkeys Spinning Monkeys.ogg"),
+//         }
+//     }
+// }
 
 fn start_credits_music(mut commands: Commands, credits_music: Res<CreditsAssets>) {
     commands.spawn((
