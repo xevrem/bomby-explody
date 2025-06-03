@@ -23,7 +23,7 @@ mod dev_tools;
 #[cfg(feature = "demo")]
 mod demo;
 
-use bevy::{asset::AssetMetaCheck, prelude::*};
+use bevy::{asset::AssetMetaCheck, prelude::*, window::WindowResolution};
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -47,6 +47,9 @@ impl Plugin for AppPlugin {
                     primary_window: Window {
                         title: "Bomby Explody".to_string(),
                         fit_canvas_to_parent: true,
+                        resolution: WindowResolution::default(),
+                            // .with_scale_factor_override(2.0),
+                        resizable: false,
                         ..default()
                     }
                     .into(),

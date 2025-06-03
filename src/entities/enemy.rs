@@ -24,6 +24,7 @@ pub fn create_enemy(enemy_assets: &EnemyAssets, index: usize, position: Vec2) ->
         AnimationConfig::new(index, 4, 4),
         Transform {
             translation: position.extend(0.0),
+            scale: Vec3::splat(3.0),
             ..default()
         },
     )
