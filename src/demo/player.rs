@@ -55,14 +55,12 @@ struct Idle;
 fn bind_actions() -> Actions<PlayerControlls> {
     info!("actions bound");
     let mut actions = Actions::<PlayerControlls>::default();
-    actions
-        .bind::<Move>()
-        .to(Cardinal::wasd_keys());
-        // .with_modifiers((
-        //     // Modifiers applied at the action level.
-        //     DeadZone::default(), // Normalizes movement.
-        //                          SmoothNudge::default(), // Smoothes movement.
-        // ));
+    actions.bind::<Move>().to(Cardinal::wasd_keys());
+    // .with_modifiers((
+    //     // Modifiers applied at the action level.
+    //     DeadZone::default(), // Normalizes movement.
+    //                          SmoothNudge::default(), // Smoothes movement.
+    // ));
     // actions
     //     .bind::<Idle>()
     //     // .to((

@@ -9,7 +9,7 @@ use crate::{assets::AssetsState, audio::music, menus::Menu, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
-        LoadingStateConfig::new(AssetsState::Unloaded).load_collection::<CreditsAssets>(),
+        LoadingStateConfig::new(AssetsState::LoadInitial).load_collection::<CreditsAssets>(),
     );
 
     app.add_systems(OnEnter(Menu::Credits), spawn_credits_menu);

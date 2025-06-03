@@ -49,7 +49,7 @@ fn enter_loading_or_gameplay_screen(
     assets_state: Res<State<AssetsState>>,
     mut next_screen: ResMut<NextState<Screen>>,
 ) {
-    if assets_state.get() == &AssetsState::Ready {
+    if assets_state.get() == &AssetsState::GameplayReady {
         next_screen.set(Screen::Gameplay);
     } else {
         next_screen.set(Screen::Loading);

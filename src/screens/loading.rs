@@ -18,7 +18,8 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        enter_gameplay_screen.run_if(in_state(Screen::Loading).and(in_state(AssetsState::Ready))),
+        enter_gameplay_screen
+            .run_if(in_state(Screen::Loading).and(in_state(AssetsState::GameplayReady))),
     );
 }
 
@@ -30,10 +31,12 @@ fn spawn_loading_screen(mut commands: Commands) {
     ));
 }
 fn start_asset_loading(mut next_state: ResMut<NextState<AssetsState>>) {
-    next_state.set(AssetsState::Loading);
+    info!("start loading gameplay assets");
+    next_state.set(AssetsState::LoadGameplay);
 }
 
 fn enter_gameplay_screen(mut next_screen: ResMut<NextState<Screen>>) {
+    info!("loading screen transitioning to gameplay screen");
     next_screen.set(Screen::Gameplay);
 }
 

@@ -6,7 +6,7 @@ use crate::{assets::AssetsState, audio::sound_effect};
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<InteractionPalette>();
     app.configure_loading_state(
-        LoadingStateConfig::new(AssetsState::Unloaded).load_collection::<InteractionAssets>(),
+        LoadingStateConfig::new(AssetsState::LoadInitial).load_collection::<InteractionAssets>(),
     );
     app.add_systems(Update, apply_interaction_palette);
 
