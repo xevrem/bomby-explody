@@ -8,17 +8,20 @@ edition = "2024"
 bevy = { version = "0.16", features = ["wayland"] }
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4", features = [
-    "max_level_debug",
-    "release_max_level_warn",
+        "max_level_debug",
+        "release_max_level_warn",
 ] }
 # Compile low-severity logs out of web builds for performance.
 tracing = { version = "0.1", features = [
-    "max_level_debug",
-    "release_max_level_warn",
+        "max_level_debug",
+        "release_max_level_warn",
 ] }
 bevy-inspector-egui = "0.31.0"
 bevy_enhanced_input = "0.12.0"
-bevy_asset_loader = { version = "0.23.0", features = ["2d", "progress_tracking"] }
+bevy_asset_loader = { version = "0.23.0", features = [
+        "2d",
+        "progress_tracking",
+] }
 avian2d = "0.3.0"
 bevy-tnua-avian2d = "0.5.0"
 bevy_rand = "0.11.0"
@@ -41,21 +44,21 @@ rand = "0.9.1"
 # Default to a native dev build.
 default = ["dev_native"]
 dev = [
-    # Improve compile times for dev builds by linking Bevy as a dynamic library.
-    "bevy/dynamic_linking",
-    "bevy/bevy_dev_tools",
-    "bevy/bevy_ui_debug",
-    # Improve error messages coming from Bevy
-    "bevy/track_location",
+        # Improve compile times for dev builds by linking Bevy as a dynamic library.
+        "bevy/dynamic_linking",
+        "bevy/bevy_dev_tools",
+        "bevy/bevy_ui_debug",
+        # Improve error messages coming from Bevy
+        "bevy/track_location",
 ]
 dev_native = [
-    "dev",
-    # Enable asset hot reloading for native dev builds.
-    "bevy/file_watcher",
-    # Enable embedded asset hot reloading for native dev builds.
-    "bevy/embedded_watcher",
+        "dev",
+        # Enable asset hot reloading for native dev builds.
+        "bevy/file_watcher",
+        # Enable embedded asset hot reloading for native dev builds.
+        "bevy/embedded_watcher",
 ]
-
+demo = ["dev_native"]
 
 [package.metadata.bevy_cli.release]
 # Disable dev features for release builds.
