@@ -34,10 +34,15 @@ impl AnimationConfig {
     }
 }
 
-
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Bomb {
+    pub timer: Timer,
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Explosion {
     pub timer: Timer,
 }
 
@@ -56,14 +61,11 @@ pub struct MovementConfig {
 
 impl MovementConfig {
     pub fn new(direction: Vec2, speed: f32) -> Self {
-        Self {
-            direction,
-            speed,
-        }
+        Self { direction, speed }
     }
 
     pub fn from_vec2(vec: Vec2) -> Self {
-        let speed =  vec.length();
+        let speed = vec.length();
         let direction = vec.normalize();
         Self { direction, speed }
     }
