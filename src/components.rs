@@ -2,7 +2,11 @@ use bevy::prelude::*;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub(crate) struct AnimationConfig {
+pub(super) struct Animating;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub(super) struct AnimationConfig {
     pub index: usize,
     pub frames: usize,
     pub timer: Timer,

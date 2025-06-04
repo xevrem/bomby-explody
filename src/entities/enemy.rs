@@ -6,7 +6,6 @@ pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<EnemyAssets>(),
     );
-    app.add_systems(Update, animate_enemy);
 }
 
 pub fn create_enemy(enemy_assets: &EnemyAssets, index: usize, position: Vec2) -> impl Bundle {
@@ -22,6 +21,7 @@ pub fn create_enemy(enemy_assets: &EnemyAssets, index: usize, position: Vec2) ->
             },
         ),
         AnimationConfig::new(index, 4, 4),
+        Animating,
         Transform {
             translation: position.extend(0.0),
             scale: Vec3::splat(3.0),
@@ -37,27 +37,4 @@ pub struct EnemyAssets {
     enemies: Handle<Image>,
     #[asset(texture_atlas_layout(tile_size_x = 30, tile_size_y = 30, columns = 4, rows = 48))]
     layout: Handle<TextureAtlasLayout>,
-}
-
-fn animate_enemy(
-    mut enemy_query: Query<(&mut Sprite, &mut AnimationConfig), With<Enemy>>,
-    time: Res<Time>,
-) {
-    for (mut sprite, mut anim) in &mut enemy_query {
-        anim.timer.tick(time.delta());
-
-        if anim.timer.just_finished() {
-            if let Some(atlas) = &mut sprite.texture_atlas {
-                if atlas.index == anim.index + anim.frames {
-                    // last frame, so reset
-                    atlas.index = anim.index;
-                } else {
-                    // continue iterating
-                    atlas.index += 1;
-                }
-            }
-
-            anim.timer = anim.timer_from_self_fps();
-        }
-    }
 }
