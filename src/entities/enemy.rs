@@ -1,4 +1,5 @@
 use crate::{assets::AssetsState, components::*};
+use avian2d::parry::simba::scalar::SupersetOf;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
@@ -8,27 +9,31 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-pub fn create_enemy(enemy_assets: &EnemyAssets, index: usize, position: Vec2) -> impl Bundle {
+pub fn create_enemy(
+    enemy_assets: &EnemyAssets,
+    index: usize,
+    position: Vec2,
+    movement: Vec2,
+    speed_percent: f32
+) -> impl Bundle {
     (
         Name::new("Enemy"),
         Enemy,
-        Sprite::from_atlas_image(
-            enemy_assets.enemies.clone(),
-            TextureAtlas {
+        Sprite {
+            image: enemy_assets.enemies.clone(),
+            texture_atlas: Some(TextureAtlas {
                 layout: enemy_assets.layout.clone(),
                 index,
                 ..default()
-            },
-        ),
-        AnimationConfig::new(index, 4, 4),
-        Animating,
-        MovementConfig::from_vec2(Vec2::new(0.0, 1.0)).with_speed_as_screen_height_percent(0.1),
-        Moving,
-        Transform {
-            translation: position.extend(0.0),
-            scale: Vec3::splat(3.0),
+            }),
+            custom_size: Some(Vec2::splat(30.0 * 3.0)),
             ..default()
         },
+        AnimationConfig::new(index, 4, 4),
+        Animating,
+        MovementConfig::from_vec2(movement).with_speed_as_screen_width_percent(speed_percent),
+        Moving,
+        Transform::from_translation(position.extend(0.0)),
     )
 }
 
