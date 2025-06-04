@@ -22,6 +22,8 @@ pub fn create_enemy(enemy_assets: &EnemyAssets, index: usize, position: Vec2) ->
         ),
         AnimationConfig::new(index, 4, 4),
         Animating,
+        MovementConfig::from_vec2(Vec2::new(0.0, 1.0)).with_speed_as_screen_height_percent(0.1),
+        Moving,
         Transform {
             translation: position.extend(0.0),
             scale: Vec3::splat(3.0),

@@ -8,10 +8,12 @@ mod animation;
 mod assets;
 mod audio;
 mod components;
+mod constants;
 mod entities;
 mod input;
 mod levels;
 mod menus;
+mod movement;
 mod physics;
 mod random;
 mod screens;
@@ -25,6 +27,7 @@ mod dev_tools;
 mod demo;
 
 use bevy::{asset::AssetMetaCheck, prelude::*, window::WindowResolution};
+use constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -48,8 +51,8 @@ impl Plugin for AppPlugin {
                     primary_window: Window {
                         title: "Bomby Explody".to_string(),
                         fit_canvas_to_parent: true,
-                        resolution: WindowResolution::default(),
-                            // .with_scale_factor_override(2.0),
+                        resolution: WindowResolution::new(SCREEN_WIDTH, SCREEN_HEIGHT),
+                        // .with_scale_factor_override(2.0),
                         resizable: false,
                         ..default()
                     }
@@ -69,9 +72,11 @@ impl Plugin for AppPlugin {
         app.add_plugins((
             animation::plugin,
             audio::plugin,
+            components::plugin,
             entities::plugin,
             levels::plugin,
             menus::plugin,
+            movement::plugin,
             screens::plugin,
             spawners::plugin,
             theme::plugin,
