@@ -4,7 +4,9 @@
 * Jam Theme - Chain Reaction
 
 * Concept
-ahjdkahsd
+enemies approach character or defense location
+
+player blows them up, getting more points for chain reactions
 
 * Features
 
