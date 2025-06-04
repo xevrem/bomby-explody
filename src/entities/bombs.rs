@@ -17,6 +17,7 @@ pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
     info!("create bomb at {}", position);
     (
         Name::new("Bomb"),
+        StateScoped(Screen::Gameplay),
         Sprite {
             image: assets.ball.clone(),
             texture_atlas: Some(TextureAtlas {
@@ -24,10 +25,11 @@ pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
                 layout: assets.ball_layout.clone(),
                 ..default()
             }),
+            custom_size: Some(Vec2::splat(64.0)),
             ..default()
         },
         Transform::from_translation(position.extend(0.0).clone()),
-        AnimationConfig::new(0, 8, 3),
+        AnimationConfig::new(0, 8, 6),
         Animating,
     )
 }
@@ -53,12 +55,17 @@ fn place_bomb(
     screen_state: Res<State<Screen>>,
     assets_state: Res<State<AssetsState>>,
     assets: Res<BombAssets>,
+    camera_query: Single<(&Camera, &GlobalTransform)>,
 ) {
-    if screen_state.get() == &Screen::Gameplay
-    // && assets_state.get() == &AssetsState::GameplayReady
+    if screen_state.get() == &Screen::Gameplay && assets_state.get() == &AssetsState::GameplayReady
     {
         // info!("clicky {}", trigger.pointer_location.position);
-        let location = trigger.pointer_location.position;
-        commands.spawn(create_bomb(&assets, location));
+        let (camera, camera_trans) = *camera_query;
+        if let Ok(location) =
+            camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
+        {
+            // let location = trigger.pointer_location.position;
+            commands.spawn(create_bomb(&assets, location));
+        }
     }
 }
