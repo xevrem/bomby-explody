@@ -14,7 +14,7 @@ pub fn create_enemy(
     index: usize,
     position: Vec2,
     movement: Vec2,
-    speed_percent: f32
+    speed_percent: f32,
 ) -> impl Bundle {
     (
         Name::new("Enemy"),

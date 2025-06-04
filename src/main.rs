@@ -9,6 +9,7 @@ mod assets;
 mod audio;
 mod components;
 mod constants;
+mod controlls;
 mod entities;
 mod input;
 mod levels;
@@ -73,6 +74,7 @@ impl Plugin for AppPlugin {
             animation::plugin,
             audio::plugin,
             components::plugin,
+            controlls::plugin,
             entities::plugin,
             levels::plugin,
             menus::plugin,

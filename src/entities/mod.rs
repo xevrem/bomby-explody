@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 
-pub(super) mod enemy;
+pub mod enemy;
+pub mod bombs;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((enemy::plugin));
+    app.add_plugins((bombs::plugin, enemy::plugin));
 }
