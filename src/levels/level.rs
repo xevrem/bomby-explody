@@ -5,6 +5,7 @@ use bevy_asset_loader::prelude::*;
 
 use crate::{
     audio::music,
+    constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
     screens::Screen,
 };
@@ -29,8 +30,30 @@ pub fn spawn_level(
         Visibility::default(),
         StateScoped(Screen::Gameplay),
         children![
-            create_enemy(&enemy_assets, 0, Vec2::new(0., 0.)),
-            //create_player(400.0, &player_assets, &mut texture_atlas_layouts),
+            create_enemy(
+                &enemy_assets,
+                0,
+                // center right side of screen
+                Vec2::new(SCREEN_WIDTH / 2.0, 0.0),
+                Vec2::new(-1., 0.),
+                0.1
+            ),
+            create_enemy(
+                &enemy_assets,
+                0,
+                // center right side of screen
+                Vec2::new(SCREEN_WIDTH / 2.0, 180.),
+                Vec2::new(-1., 0.),
+                0.15
+            ),
+            create_enemy(
+                &enemy_assets,
+                0,
+                // center right side of screen
+                Vec2::new(SCREEN_WIDTH / 2., -180.0),
+                Vec2::new(-1., 0.),
+                0.2
+            ),
             (
                 Name::new("Gameplay Music"),
                 music(level_assets.music.clone())
