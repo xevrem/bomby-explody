@@ -34,6 +34,13 @@ impl AnimationConfig {
     }
 }
 
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Bomb {
+    pub timer: Timer,
+}
+
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Enemy;

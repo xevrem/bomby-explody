@@ -1,4 +1,7 @@
-use crate::{assets::AssetsState, components::*, controlls::PlaceBomb, screens::Screen};
+use crate::{
+    assets::AssetsState, components::*, controlls::PlaceBomb, screens::Screen, AppSystems,
+    PausableSystems,
+};
 use avian2d::parry::simba::scalar::SupersetOf;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -9,12 +12,40 @@ pub(super) fn plugin(app: &mut App) {
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<BombAssets>(),
     );
     app.add_systems(OnEnter(Screen::Gameplay), add_click_to_spawn_observer);
+    app.add_systems(
+        Update,
+        bomb_timer_countdown
+            .in_set(AppSystems::TickTimers)
+            .in_set(PausableSystems),
+    );
+}
+
+fn bomb_timer_countdown(
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut Bomb)>,
+    time: Res<Time>,
+) {
+    for (entity, mut bomb) in &mut query {
+        bomb.timer.tick(time.delta());
+        if bomb.timer.just_finished() {
+            // BOOM
+            explode_bomb(&mut commands, entity);
+        }
+    }
+}
+
+fn explode_bomb(commands: &mut Commands, entity: Entity) {
+    commands.entity(entity).despawn_recursive();
+    // TODO: spawn explosion here
 }
 
 pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
     info!("create bomb at {}", position);
     (
         Name::new("Bomb"),
+        Bomb {
+            timer: Timer::from_seconds(3.0, TimerMode::Once),
+        },
         StateScoped(Screen::Gameplay),
         Sprite {
             image: assets.ball.clone(),
