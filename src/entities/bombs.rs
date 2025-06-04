@@ -8,8 +8,9 @@ pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<BombAssets>(),
     );
-
-    app.add_observer(place_bomb);
+    app.add_systems(OnEnter(Screen::Gameplay), |a: &mut World| {
+        a.add_observer(place_bomb);
+    });
 }
 
 pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
@@ -26,6 +27,8 @@ pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
             ..default()
         },
         Transform::from_translation(position.extend(0.0).clone()),
+        AnimationConfig::new(0, 8, 3),
+        Animating,
     )
 }
 
@@ -51,10 +54,11 @@ fn place_bomb(
     assets_state: Res<State<AssetsState>>,
     assets: Res<BombAssets>,
 ) {
-    if screen_state.get() == &Screen::Gameplay// && assets_state.get() == &AssetsState::GameplayReady
+    if screen_state.get() == &Screen::Gameplay
+    // && assets_state.get() == &AssetsState::GameplayReady
     {
-        info!("clicky {}", trigger.pointer_location.position);
-        // let location = trigger.pointer_location.position;
-        // commands.spawn(create_bomb(&assets, location));
+        // info!("clicky {}", trigger.pointer_location.position);
+        let location = trigger.pointer_location.position;
+        commands.spawn(create_bomb(&assets, location));
     }
 }
