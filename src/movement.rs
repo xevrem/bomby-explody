@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
-use crate::components::*;
+use crate::{components::*, AppSystems, PausableSystems};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, apply_movement);
+    app.add_systems(Update, apply_movement.in_set(AppSystems::Update).in_set(PausableSystems));
 }
 
 fn apply_movement(
@@ -14,6 +14,5 @@ fn apply_movement(
         let unit_rate = time.delta_secs() * config.speed;
         let delta = unit_rate * config.direction;
         transform.translation += delta.extend(0.0);
-        info!("delta time: {}", time.delta_secs());
     }
 }
