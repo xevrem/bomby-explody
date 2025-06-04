@@ -15,7 +15,7 @@ fn animate_entity(
 
         if anim.timer.just_finished() {
             if let Some(atlas) = &mut sprite.texture_atlas {
-                if atlas.index == anim.index + anim.frames {
+                if atlas.index == anim.index + anim.frames - 1 {
                     // last frame, so reset
                     atlas.index = anim.index;
                 } else {
