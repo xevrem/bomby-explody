@@ -4,6 +4,7 @@
 #![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
 // mod asset_tracking;
+mod animation;
 mod assets;
 mod audio;
 mod components;
@@ -66,6 +67,7 @@ impl Plugin for AppPlugin {
 
         // Add other plugins.
         app.add_plugins((
+            animation::plugin,
             audio::plugin,
             entities::plugin,
             levels::plugin,
