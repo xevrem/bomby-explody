@@ -14,7 +14,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay), add_click_to_spawn_observer);
     app.add_systems(
         Update,
-        bomb_timer_countdown
+        (bomb_timer_countdown, despawn_explosion).run_if(in_state(Screen::Gameplay))
             .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems),
     );
@@ -22,21 +22,22 @@ pub(super) fn plugin(app: &mut App) {
 
 fn bomb_timer_countdown(
     mut commands: Commands,
-    mut query: Query<(Entity, &mut Bomb)>,
+    mut query: Query<(Entity, &mut Bomb, &GlobalTransform)>,
     time: Res<Time>,
+    assets: Res<BombAssets>
 ) {
-    for (entity, mut bomb) in &mut query {
+    for (entity, mut bomb, transform) in &mut query {
         bomb.timer.tick(time.delta());
         if bomb.timer.just_finished() {
             // BOOM
-            explode_bomb(&mut commands, entity);
+
+            // destroy
+            commands.entity(entity).despawn_recursive();
+
+            // make splosion
+            commands.spawn(create_explosion(&assets, transform.translation().truncate()));
         }
     }
-}
-
-fn explode_bomb(commands: &mut Commands, entity: Entity) {
-    commands.entity(entity).despawn_recursive();
-    // TODO: spawn explosion here
 }
 
 pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
@@ -71,10 +72,12 @@ pub struct BombAssets {
     #[asset(path = "images/vfx/Fire_Explosion.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub explosion: Handle<Image>,
+    #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 1))]
+    pub explosion_layout: Handle<TextureAtlasLayout>,
     #[asset(path = "images/vfx/Lavaball.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub ball: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 4))]
+    #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 2))]
     pub ball_layout: Handle<TextureAtlasLayout>,
 }
 
@@ -102,6 +105,39 @@ fn place_bomb_on_click(
         {
             // let location = trigger.pointer_location.position;
             commands.spawn(create_bomb(&assets, location));
+        }
+    }
+}
+
+fn create_explosion(assets: &BombAssets, location: Vec2) -> impl Bundle {
+    (
+        Name::new("Explosion"),
+        Explosion {
+            timer: Timer::from_seconds(0.5, TimerMode::Once),
+        },
+        StateScoped(Screen::Gameplay),
+        Sprite {
+            image: assets.explosion.clone(),
+            texture_atlas: Some(TextureAtlas {
+                index: 0,
+                layout: assets.explosion_layout.clone(),
+                ..default()
+            }),
+            custom_size: Some(Vec2::splat(96.0)),
+            ..default()
+        },
+        Transform::from_translation(location.extend(0.0)),
+        AnimationConfig::new(0, 6, 12),
+        Animating,
+    )
+}
+
+fn despawn_explosion(mut commands: Commands, mut query: Query<(Entity, &mut Explosion)>, time: Res<Time> ) {
+    for (entity, mut explosion) in &mut query {
+        explosion.timer.tick(time.delta());
+
+        if explosion.timer.just_finished() {
+            commands.entity(entity).despawn_recursive();
         }
     }
 }

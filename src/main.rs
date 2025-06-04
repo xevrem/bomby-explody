@@ -11,6 +11,7 @@ mod components;
 mod constants;
 mod controlls;
 mod entities;
+mod vfx;
 mod input;
 mod levels;
 mod menus;
