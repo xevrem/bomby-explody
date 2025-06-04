@@ -8,9 +8,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<BombAssets>(),
     );
-    app.add_systems(OnEnter(Screen::Gameplay), |a: &mut World| {
-        a.add_observer(place_bomb);
-    });
+    app.add_systems(OnEnter(Screen::Gameplay), add_click_to_spawn_observer);
 }
 
 pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
@@ -49,7 +47,14 @@ pub struct BombAssets {
     pub ball_layout: Handle<TextureAtlasLayout>,
 }
 
-fn place_bomb(
+fn add_click_to_spawn_observer(mut commands: Commands) {
+    commands.spawn((
+        StateScoped(Screen::Gameplay),
+        Observer::new(place_bomb_on_click),
+    ));
+}
+
+fn place_bomb_on_click(
     trigger: Trigger<Pointer<Click>>,
     mut commands: Commands,
     screen_state: Res<State<Screen>>,
