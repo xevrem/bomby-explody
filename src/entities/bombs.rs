@@ -42,11 +42,11 @@ pub struct BombAssets {
     pub ball_layout: Handle<TextureAtlasLayout>,
 }
 
-pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
+pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32) -> impl Bundle {
     (
         Name::new("Bomb"),
         Bomb {
-            timer: Timer::from_seconds(3.0, TimerMode::Once),
+            timer: Timer::from_seconds(timeout, TimerMode::Once),
         },
         StateScoped(Screen::Gameplay),
         Sprite {
@@ -88,7 +88,7 @@ fn place_bomb_on_click(
             camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
         {
             // let location = trigger.pointer_location.position;
-            commands.spawn(create_bomb(&assets, location));
+            commands.spawn(create_bomb(&assets, location, 2.0));
         }
     }
 }
