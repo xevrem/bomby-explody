@@ -2,6 +2,14 @@ use bevy::prelude::*;
 
 use crate::constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
 
+pub(super) fn plugin(app: &mut App) {
+    app.register_type::<AnimationConfig>()
+        .register_type::<Bomb>()
+        .register_type::<Explosion>()
+        .register_type::<MovementConfig>()
+        .register_type::<WillExplode>();
+}
+
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub(super) struct Animating;
@@ -93,7 +101,8 @@ pub struct Moving;
 #[reflect(Component)]
 pub struct Spawner;
 
-pub(super) fn plugin(app: &mut App) {
-    app.register_type::<AnimationConfig>();
-    app.register_type::<MovementConfig>();
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct WillExplode {
+    timer: Timer,
 }
