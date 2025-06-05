@@ -74,7 +74,7 @@ fn play_on_hover_sound_effect(
     };
 
     if interaction_query.contains(trigger.target()) {
-        commands.spawn(sound_effect(interaction_assets.hover.clone()));
+        commands.spawn(sound_effect(interaction_assets.hover.clone(), 1.0));
     }
 }
 
@@ -89,6 +89,6 @@ fn play_on_click_sound_effect(
     };
 
     if interaction_query.contains(trigger.target()) {
-        commands.spawn(sound_effect(interaction_assets.click.clone()));
+        commands.spawn(sound_effect(interaction_assets.click.clone(), 1.0));
     }
 }
