@@ -102,7 +102,7 @@ pub struct BlastEvent {
 
 fn bomb_timer_countdown(
     mut commands: Commands,
-    mut query: Query<(Entity, &mut Bomb)>,
+    mut query: Query<(Entity, &mut Bomb), (Without<Exploding>, Without<WillExplode>)>,
     time: Res<Time>,
 ) {
     for (entity, mut bomb) in &mut query {
