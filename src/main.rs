@@ -11,7 +11,6 @@ mod components;
 mod constants;
 mod controlls;
 mod entities;
-mod vfx;
 mod input;
 mod levels;
 mod menus;
@@ -21,6 +20,7 @@ mod random;
 mod screens;
 mod spawners;
 mod theme;
+mod vfx;
 // dev specific
 #[cfg(feature = "dev")]
 mod dev_tools;
@@ -30,6 +30,7 @@ mod demo;
 
 use bevy::{asset::AssetMetaCheck, prelude::*, window::WindowResolution};
 use constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
+use screens::Screen;
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -105,6 +106,7 @@ impl Plugin for AppPlugin {
         // Set up the `Pause` state.
         app.init_state::<Pause>();
         app.configure_sets(Update, PausableSystems.run_if(in_state(Pause(false))));
+        app.configure_sets(Update, GameplaySystems.run_if(in_state(Screen::Gameplay)));
 
         // Spawn the main camera.
         app.add_systems(Startup, spawn_camera);
@@ -133,16 +135,9 @@ struct Pause(pub bool);
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
 struct PausableSystems;
 
-// #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
-// pub enum GameState {
-//     #[default]
-//     Startup,
-//     AssetLoading,
-//     AssetLoadingDone,
-//     Setup,
-//     MainMenu,
-//     Gameplay,
-// }
+/// A system set for systems that should only run while the scene is in Gameplay.
+#[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
+struct GameplaySystems;
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((Name::new("Camera"), Camera2d));
