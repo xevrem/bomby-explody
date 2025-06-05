@@ -42,6 +42,13 @@ pub struct BombAssets {
     pub ball_layout: Handle<TextureAtlasLayout>,
 }
 
+#[derive(Event)]
+pub struct BlastEvent {
+    pub source: Entity,
+    pub location: Vec2,
+    pub range: f32,
+}
+
 pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32) -> impl Bundle {
     (
         Name::new("Bomb"),
@@ -91,13 +98,6 @@ fn place_bomb_on_click(
             commands.spawn(create_bomb(&assets, location, 2.0));
         }
     }
-}
-
-#[derive(Event)]
-pub struct BlastEvent {
-    pub source: Entity,
-    pub location: Vec2,
-    pub range: f32,
 }
 
 fn bomb_timer_countdown(
