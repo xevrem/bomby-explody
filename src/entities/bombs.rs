@@ -113,7 +113,7 @@ fn bomb_timer_countdown(
         bomb.timer.tick(time.delta());
         if bomb.timer.just_finished() {
             // BOOM
-            mark_bomb_for_explode(&mut commands, entity, 0.1
+            mark_bomb_for_explode(&mut commands, entity, 0.1);
         }
     }
 }
