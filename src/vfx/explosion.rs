@@ -45,7 +45,7 @@ fn despawn_explosion_timer(
         explosion.timer.tick(time.delta());
 
         if explosion.timer.just_finished() {
-            commands.entity(entity).despawn_recursive();
+            commands.entity(entity).despawn();
         }
     }
 }
