@@ -1,5 +1,6 @@
 use crate::{
     assets::AssetsState,
+    audio::{sound_effect, SfxAssets},
     components::*,
     screens::Screen,
     vfx::{explosion::create_explosion_vfx, VfxAssets},
@@ -7,6 +8,9 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
+use bevy_prng::WyRand;
+use bevy_rand::global::GlobalEntropy;
+use rand::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
@@ -16,7 +20,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay), add_click_to_spawn_observer);
     app.add_systems(
         Update,
-        bomb_timer_countdown
+        (bomb_timer_countdown, countdown_to_exploding)
             .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
@@ -109,32 +113,46 @@ fn bomb_timer_countdown(
         bomb.timer.tick(time.delta());
         if bomb.timer.just_finished() {
             // BOOM
-            mark_bomb_for_explode(&mut commands, entity);
+            mark_bomb_for_explode(&mut commands, entity, 1.0);
         }
     }
 }
 
-fn mark_bomb_for_explode(commands: &mut Commands, entity: Entity) {
-    commands.entity(entity).insert(Exploding);
+fn mark_bomb_for_explode(commands: &mut Commands, entity: Entity, timeout: f32) {
+    commands.entity(entity).insert(WillExplode {
+        timer: Timer::from_seconds(timeout, TimerMode::Once),
+    });
 }
 
 fn explode_exploding_bombs(
     mut commands: Commands,
     assets: Res<VfxAssets>,
+    sfx: Res<SfxAssets>,
     mut blast_writer: EventWriter<BlastEvent>,
     mut query: Query<(Entity, &GlobalTransform), (With<Bomb>, With<Exploding>)>,
+    mut entropy: GlobalEntropy<WyRand>,
 ) {
     for (entity, trans) in &mut query {
-        explode_bomb(&mut commands, &assets, &mut blast_writer, entity, &trans);
+        explode_bomb(
+            &mut commands,
+            &assets,
+            &sfx,
+            &mut blast_writer,
+            entity,
+            &trans,
+            &mut entropy,
+        );
     }
 }
 
 fn explode_bomb(
     commands: &mut Commands,
     assets: &VfxAssets,
+    sfx: &SfxAssets,
     blast_writer: &mut EventWriter<BlastEvent>,
     entity: Entity,
     transform: &GlobalTransform,
+    entropy: &mut GlobalEntropy<WyRand>,
 ) {
     // destroy
     commands.entity(entity).despawn();
@@ -144,6 +162,12 @@ fn explode_bomb(
         &assets,
         transform.translation().truncate(),
     ));
+
+    if let Some(random_step) = sfx.bombs.choose(entropy.as_mut()) {
+        commands.spawn(sound_effect(random_step.clone(), 0.15));
+    } else {
+        warn!("no bomb sound :(");
+    }
 
     blast_writer.write(BlastEvent {
         source: entity,
@@ -155,7 +179,10 @@ fn explode_bomb(
 fn chain_blast(
     mut commands: Commands,
     mut blast_reader: EventReader<BlastEvent>,
-    mut bomb_query: Query<(Entity, &GlobalTransform), (With<Bomb>, Without<Exploding>)>,
+    mut bomb_query: Query<
+        (Entity, &GlobalTransform),
+        (With<Bomb>, Without<Exploding>, Without<WillExplode>),
+    >,
 ) {
     if blast_reader.len() > 0 {
         // TODO: process events
@@ -168,9 +195,23 @@ fn chain_blast(
                 } else if blast.location.distance(bomb_trans.translation().truncate()) < blast.range
                 {
                     // other bomb within distance, ASPLODE
-                    mark_bomb_for_explode(&mut commands, bomb_ent);
+                    mark_bomb_for_explode(&mut commands, bomb_ent, 0.1);
                 }
             }
+        }
+    }
+}
+
+fn countdown_to_exploding(
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut WillExplode), (With<Bomb>, Without<Exploding>)>,
+    time: Res<Time>,
+) {
+    for (entity, mut will_explode) in &mut query {
+        will_explode.timer.tick(time.delta());
+        if will_explode.timer.just_finished() {
+            // BOOM
+            commands.entity(entity).insert(Exploding);
         }
     }
 }
