@@ -1,9 +1,15 @@
-use crate::{assets::AssetsState, components::*, AppSystems, PausableSystems};
+use crate::{assets::AssetsState, components::*, AppSystems, GameplaySystems, PausableSystems};
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, animate_entity.in_set(AppSystems::Update).in_set(PausableSystems));
+    app.add_systems(
+        Update,
+        animate_entity
+            .in_set(AppSystems::Update)
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
+    );
 }
 
 fn animate_entity(

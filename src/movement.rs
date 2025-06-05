@@ -1,9 +1,15 @@
 use bevy::prelude::*;
 
-use crate::{components::*, AppSystems, PausableSystems};
+use crate::{components::*, AppSystems, GameplaySystems, PausableSystems};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, apply_movement.in_set(AppSystems::Update).in_set(PausableSystems));
+    app.add_systems(
+        Update,
+        apply_movement
+            .in_set(AppSystems::Update)
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
+    );
 }
 
 fn apply_movement(

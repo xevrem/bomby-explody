@@ -1,4 +1,7 @@
-use crate::{assets::AssetsState, components::*, screens::Screen, AppSystems, PausableSystems};
+use crate::{
+    assets::AssetsState, components::*, screens::Screen, AppSystems, GameplaySystems,
+    PausableSystems,
+};
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
@@ -11,16 +14,16 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (bomb_timer_countdown, despawn_explosion_timer)
-            .run_if(in_state(Screen::Gameplay))
             .in_set(AppSystems::TickTimers)
-            .in_set(PausableSystems),
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
     );
     app.add_systems(
         Update,
         (chain_blast, explode_exploding_bombs)
-            .run_if(in_state(Screen::Gameplay))
             .in_set(AppSystems::Update)
-            .in_set(PausableSystems),
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
     );
 }
 
