@@ -30,6 +30,18 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
+#[derive(AssetCollection, Resource)]
+pub struct BombAssets {
+    #[asset(path = "images/vfx/Charge_Fire.png")]
+    #[asset(image(sampler(filter = nearest)))]
+    pub charge: Handle<Image>,
+    #[asset(path = "images/vfx/Lavaball.png")]
+    #[asset(image(sampler(filter = nearest)))]
+    pub ball: Handle<Image>,
+    #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 2))]
+    pub ball_layout: Handle<TextureAtlasLayout>,
+}
+
 pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
     (
         Name::new("Bomb"),
@@ -51,18 +63,6 @@ pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
         AnimationConfig::new(0, 8, 6),
         Animating,
     )
-}
-
-#[derive(AssetCollection, Resource)]
-pub struct BombAssets {
-    #[asset(path = "images/vfx/Charge_Fire.png")]
-    #[asset(image(sampler(filter = nearest)))]
-    pub charge: Handle<Image>,
-    #[asset(path = "images/vfx/Lavaball.png")]
-    #[asset(image(sampler(filter = nearest)))]
-    pub ball: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 2))]
-    pub ball_layout: Handle<TextureAtlasLayout>,
 }
 
 fn add_click_to_spawn_observer(mut commands: Commands) {
