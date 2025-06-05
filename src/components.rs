@@ -4,9 +4,11 @@ use crate::constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<AnimationConfig>()
+        .register_type::<Music>()
         .register_type::<Bomb>()
         .register_type::<Explosion>()
         .register_type::<MovementConfig>()
+        .register_type::<SoundEffect>()
         .register_type::<WillExplode>();
 }
 
@@ -96,6 +98,22 @@ impl MovementConfig {
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Moving;
+
+/// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
+/// general "music" category (e.g. global background music, soundtrack).
+///
+/// This can then be used to query for and operate on sounds in that category.
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct Music;
+
+/// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
+/// general "sound effect" category (e.g. footsteps, the sound of a magic spell, a door opening).
+///
+/// This can then be used to query for and operate on sounds in that category.
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct SoundEffect;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
