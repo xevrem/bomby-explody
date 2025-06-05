@@ -104,5 +104,5 @@ pub struct Spawner;
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct WillExplode {
-    timer: Timer,
+    pub timer: Timer,
 }
