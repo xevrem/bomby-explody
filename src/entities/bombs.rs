@@ -11,33 +11,22 @@ pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<BombAssets>(),
     );
+    app.add_event::<BlastEvent>();
     app.add_systems(OnEnter(Screen::Gameplay), add_click_to_spawn_observer);
     app.add_systems(
         Update,
-        (bomb_timer_countdown, despawn_explosion).run_if(in_state(Screen::Gameplay))
+        (bomb_timer_countdown, despawn_explosion_timer)
+            .run_if(in_state(Screen::Gameplay))
             .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems),
     );
-}
-
-fn bomb_timer_countdown(
-    mut commands: Commands,
-    mut query: Query<(Entity, &mut Bomb, &GlobalTransform)>,
-    time: Res<Time>,
-    assets: Res<BombAssets>
-) {
-    for (entity, mut bomb, transform) in &mut query {
-        bomb.timer.tick(time.delta());
-        if bomb.timer.just_finished() {
-            // BOOM
-
-            // destroy
-            commands.entity(entity).despawn_recursive();
-
-            // make splosion
-            commands.spawn(create_explosion(&assets, transform.translation().truncate()));
-        }
-    }
+    app.add_systems(
+        Update,
+        (chain_blast, explode_exploding_bombs)
+            .run_if(in_state(Screen::Gameplay))
+            .in_set(AppSystems::Update)
+            .in_set(PausableSystems),
+    );
 }
 
 pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
@@ -109,6 +98,65 @@ fn place_bomb_on_click(
     }
 }
 
+#[derive(Event)]
+pub struct BlastEvent {
+    pub source: Entity,
+    pub location: Vec2,
+    pub range: f32,
+}
+
+fn bomb_timer_countdown(
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut Bomb)>,
+    time: Res<Time>,
+) {
+    for (entity, mut bomb) in &mut query {
+        bomb.timer.tick(time.delta());
+        if bomb.timer.just_finished() {
+            // BOOM
+            mark_bomb_for_explode(&mut commands, entity);
+        }
+    }
+}
+
+fn mark_bomb_for_explode(commands: &mut Commands, entity: Entity) {
+    commands.entity(entity).insert(Exploding);
+}
+
+fn explode_exploding_bombs(
+    mut commands: Commands,
+    assets: Res<BombAssets>,
+    mut blast_writer: EventWriter<BlastEvent>,
+    mut query: Query<(Entity, &GlobalTransform), (With<Bomb>, With<Exploding>)>,
+) {
+    for (entity, trans) in &mut query {
+        explode_bomb(&mut commands, &assets, &mut blast_writer, entity, &trans);
+    }
+}
+
+fn explode_bomb(
+    commands: &mut Commands,
+    assets: &BombAssets,
+    blast_writer: &mut EventWriter<BlastEvent>,
+    entity: Entity,
+    transform: &GlobalTransform,
+) {
+    // destroy
+    commands.entity(entity).despawn_recursive();
+
+    // make splosion
+    commands.spawn(create_explosion(
+        &assets,
+        transform.translation().truncate(),
+    ));
+
+    blast_writer.write(BlastEvent {
+        source: entity,
+        location: transform.translation().truncate(),
+        range: 100.0,
+    });
+}
+
 fn create_explosion(assets: &BombAssets, location: Vec2) -> impl Bundle {
     (
         Name::new("Explosion"),
@@ -132,12 +180,39 @@ fn create_explosion(assets: &BombAssets, location: Vec2) -> impl Bundle {
     )
 }
 
-fn despawn_explosion(mut commands: Commands, mut query: Query<(Entity, &mut Explosion)>, time: Res<Time> ) {
+fn despawn_explosion_timer(
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut Explosion)>,
+    time: Res<Time>,
+) {
     for (entity, mut explosion) in &mut query {
         explosion.timer.tick(time.delta());
 
         if explosion.timer.just_finished() {
             commands.entity(entity).despawn_recursive();
+        }
+    }
+}
+
+fn chain_blast(
+    mut commands: Commands,
+    mut blast_reader: EventReader<BlastEvent>,
+    mut bomb_query: Query<(Entity, &GlobalTransform), (With<Bomb>, Without<Exploding>)>,
+) {
+    if blast_reader.len() > 0 {
+        // TODO: process events
+        for blast in blast_reader.read() {
+            // if let Ok((bomb_ent, bomb_trans)) = bomb_query.get(blast.source) {
+            for (bomb_ent, bomb_trans) in &mut bomb_query {
+                if bomb_ent == blast.source {
+                    // skip if they're the same
+                    continue;
+                } else if blast.location.distance(bomb_trans.translation().truncate()) < blast.range
+                {
+                    // other bomb within distance, ASPLODE
+                    mark_bomb_for_explode(&mut commands, bomb_ent);
+                }
+            }
         }
     }
 }
