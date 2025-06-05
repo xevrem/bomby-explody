@@ -99,7 +99,7 @@ fn place_bomb_on_click(
             camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
         {
             // let location = trigger.pointer_location.position;
-            commands.spawn(create_bomb(&assets, location, 2.0));
+            commands.spawn(create_bomb(&assets, location, 2.9));
         }
     }
 }
@@ -113,7 +113,7 @@ fn bomb_timer_countdown(
         bomb.timer.tick(time.delta());
         if bomb.timer.just_finished() {
             // BOOM
-            mark_bomb_for_explode(&mut commands, entity, 1.0);
+            mark_bomb_for_explode(&mut commands, entity, 0.1
         }
     }
 }
@@ -193,6 +193,7 @@ fn chain_blast(
                     // skip if they're the same
                     continue;
                 } else if blast.location.distance(bomb_trans.translation().truncate()) < blast.range
+
                 {
                     // other bomb within distance, ASPLODE
                     mark_bomb_for_explode(&mut commands, bomb_ent, 0.1);

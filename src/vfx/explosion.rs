@@ -17,7 +17,7 @@ pub fn create_explosion_vfx(assets: &VfxAssets, location: Vec2) -> impl Bundle {
     (
         Name::new("Explosion"),
         Explosion {
-            timer: Timer::from_seconds(0.5, TimerMode::Once),
+            timer: Timer::from_seconds(0.25, TimerMode::Once),
         },
         StateScoped(Screen::Gameplay),
         Sprite {
@@ -31,7 +31,7 @@ pub fn create_explosion_vfx(assets: &VfxAssets, location: Vec2) -> impl Bundle {
             ..default()
         },
         Transform::from_translation(location.extend(0.0)),
-        AnimationConfig::new(0, 6, 12),
+        AnimationConfig::new(0, 6, 24),
         Animating,
     )
 }
@@ -43,7 +43,6 @@ fn despawn_explosion_timer(
 ) {
     for (entity, mut explosion) in &mut query {
         explosion.timer.tick(time.delta());
-
         if explosion.timer.just_finished() {
             commands.entity(entity).despawn();
         }
