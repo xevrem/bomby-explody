@@ -1,8 +1,12 @@
 use bevy::prelude::*;
+use bevy_asset_loader::prelude::*;
+
+use crate::{assets::AssetsState, components::*};
 
 pub(super) fn plugin(app: &mut App) {
-    app.register_type::<Music>();
-    app.register_type::<SoundEffect>();
+    app.configure_loading_state(
+        LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<SfxAssets>(),
+    );
 
     app.add_systems(
         Update,
@@ -10,6 +14,19 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
+#[derive(Resource, AssetCollection)]
+pub struct SfxAssets {
+    #[asset(
+        paths(
+            "audio/sound_effects/bomb_1.ogg",
+            "audio/sound_effects/bomb_2.ogg",
+            "audio/sound_effects/bomb_3.ogg",
+            "audio/sound_effects/bomb_4.ogg",
+        ),
+        collection(typed)
+    )]
+    pub bombs: Vec<Handle<AudioSource>>,
+}
 
 /// A music audio instance.
 pub fn music(handle: Handle<AudioSource>) -> impl Bundle {
