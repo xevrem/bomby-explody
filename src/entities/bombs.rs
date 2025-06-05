@@ -1,11 +1,6 @@
-use crate::{
-    assets::AssetsState, components::*, controlls::PlaceBomb, screens::Screen, AppSystems,
-    PausableSystems,
-};
-use avian2d::parry::simba::scalar::SupersetOf;
+use crate::{assets::AssetsState, components::*, screens::Screen, AppSystems, PausableSystems};
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
-use bevy_enhanced_input::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
@@ -30,7 +25,6 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 pub fn create_bomb(assets: &BombAssets, position: Vec2) -> impl Bundle {
-    info!("create bomb at {}", position);
     (
         Name::new("Bomb"),
         Bomb {
