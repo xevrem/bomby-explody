@@ -84,6 +84,7 @@ impl Plugin for AppPlugin {
             screens::plugin,
             spawners::plugin,
             theme::plugin,
+            vfx::plugin,
             // dev specific
             #[cfg(feature = "dev")]
             dev_tools::plugin,

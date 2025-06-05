@@ -1,6 +1,9 @@
 use crate::{
-    assets::AssetsState, components::*, screens::Screen, AppSystems, GameplaySystems,
-    PausableSystems,
+    assets::AssetsState,
+    components::*,
+    screens::Screen,
+    vfx::{explosion::create_explosion_vfx, VfxAssets},
+    AppSystems, GameplaySystems, PausableSystems,
 };
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -13,7 +16,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay), add_click_to_spawn_observer);
     app.add_systems(
         Update,
-        (bomb_timer_countdown, despawn_explosion_timer)
+        bomb_timer_countdown
             .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
@@ -55,11 +58,6 @@ pub struct BombAssets {
     #[asset(path = "images/vfx/Charge_Fire.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub charge: Handle<Image>,
-    #[asset(path = "images/vfx/Fire_Explosion.png")]
-    #[asset(image(sampler(filter = nearest)))]
-    pub explosion: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 1))]
-    pub explosion_layout: Handle<TextureAtlasLayout>,
     #[asset(path = "images/vfx/Lavaball.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub ball: Handle<Image>,
@@ -122,7 +120,7 @@ fn mark_bomb_for_explode(commands: &mut Commands, entity: Entity) {
 
 fn explode_exploding_bombs(
     mut commands: Commands,
-    assets: Res<BombAssets>,
+    assets: Res<VfxAssets>,
     mut blast_writer: EventWriter<BlastEvent>,
     mut query: Query<(Entity, &GlobalTransform), (With<Bomb>, With<Exploding>)>,
 ) {
@@ -133,16 +131,16 @@ fn explode_exploding_bombs(
 
 fn explode_bomb(
     commands: &mut Commands,
-    assets: &BombAssets,
+    assets: &VfxAssets,
     blast_writer: &mut EventWriter<BlastEvent>,
     entity: Entity,
     transform: &GlobalTransform,
 ) {
     // destroy
-    commands.entity(entity).despawn_recursive();
+    commands.entity(entity).despawn();
 
     // make splosion
-    commands.spawn(create_explosion(
+    commands.spawn(create_explosion_vfx(
         &assets,
         transform.translation().truncate(),
     ));
@@ -152,43 +150,6 @@ fn explode_bomb(
         location: transform.translation().truncate(),
         range: 100.0,
     });
-}
-
-fn create_explosion(assets: &BombAssets, location: Vec2) -> impl Bundle {
-    (
-        Name::new("Explosion"),
-        Explosion {
-            timer: Timer::from_seconds(0.5, TimerMode::Once),
-        },
-        StateScoped(Screen::Gameplay),
-        Sprite {
-            image: assets.explosion.clone(),
-            texture_atlas: Some(TextureAtlas {
-                index: 0,
-                layout: assets.explosion_layout.clone(),
-                ..default()
-            }),
-            custom_size: Some(Vec2::splat(96.0)),
-            ..default()
-        },
-        Transform::from_translation(location.extend(0.0)),
-        AnimationConfig::new(0, 6, 12),
-        Animating,
-    )
-}
-
-fn despawn_explosion_timer(
-    mut commands: Commands,
-    mut query: Query<(Entity, &mut Explosion)>,
-    time: Res<Time>,
-) {
-    for (entity, mut explosion) in &mut query {
-        explosion.timer.tick(time.delta());
-
-        if explosion.timer.just_finished() {
-            commands.entity(entity).despawn_recursive();
-        }
-    }
 }
 
 fn chain_blast(
