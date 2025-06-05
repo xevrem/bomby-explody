@@ -42,6 +42,10 @@ pub struct Bomb {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Exploding;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Explosion {
     pub timer: Timer,
 }
