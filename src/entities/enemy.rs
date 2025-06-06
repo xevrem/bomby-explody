@@ -45,3 +45,31 @@ pub fn create_enemy(
         Transform::from_translation(position.extend(0.0)),
     )
 }
+
+fn apply_blast_damage(
+    mut commands: Commands,
+    mut blast_events: EventReader<BlastEvent>,
+    blast_query: Query<&GlobalTransform, Without<Enemy>>,
+    enemy_query: Query<
+        (Entity, &GlobalTransform),
+        (With<Enemy>, With<Damageable>, With<Blastable>),
+    >,
+) -> Result {
+    if !blast_events.is_empty() {
+        for blast_event in blast_events.read() {
+            let blast_trans = blast_query.get(blast_event.source)?;
+            for (enemy, enemy_trans) in &enemy_query {
+                if enemy_trans
+                    .translation()
+                    .distance(blast_trans.translation())
+                    <= 100.0
+                {
+                    // blasted
+                    commands.entity(enemy).insert(Damaged { amount: 1 });
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
