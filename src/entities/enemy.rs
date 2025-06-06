@@ -20,7 +20,7 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        handle_damaged
+        (handle_damaged, handle_dead)
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
@@ -44,7 +44,14 @@ pub fn create_enemy(
 ) -> impl Bundle {
     (
         Name::new("Enemy"),
+        AnimationConfig::new(index, 4, 4),
+        Animating,
+        Blastable,
+        Damageable,
         Enemy,
+        Health { current: 10 },
+        MovementConfig::from_vec2(movement).with_speed_as_screen_width_percent(speed_percent),
+        Moving,
         Sprite {
             image: enemy_assets.enemies.clone(),
             texture_atlas: Some(TextureAtlas {
@@ -55,10 +62,6 @@ pub fn create_enemy(
             custom_size: Some(Vec2::splat(30.0 * 3.0)),
             ..default()
         },
-        AnimationConfig::new(index, 4, 4),
-        Animating,
-        MovementConfig::from_vec2(movement).with_speed_as_screen_width_percent(speed_percent),
-        Moving,
         ScreenWrap,
         Transform::from_translation(position.extend(0.0)),
     )
@@ -67,19 +70,24 @@ pub fn create_enemy(
 fn apply_blast_damage(
     mut blast_reader: EventReader<BlastEvent>,
     mut damage_writer: EventWriter<DamageEvent>,
-    blast_query: Query<&GlobalTransform, Without<Enemy>>,
     enemy_query: Query<
         (Entity, &GlobalTransform),
-        (With<Enemy>, With<Damageable>, With<Blastable>),
+        (
+            With<Enemy>,
+            With<Damageable>,
+            With<Blastable>,
+            Without<Dead>,
+        ),
     >,
 ) -> Result {
     if !blast_reader.is_empty() {
         for blast_event in blast_reader.read() {
-            let blast_trans = blast_query.get(blast_event.source)?;
+            // let blast_trans = blast_query.get(blast_event.source)?;
             for (enemy, enemy_trans) in &enemy_query {
                 if enemy_trans
                     .translation()
-                    .distance(blast_trans.translation())
+                    .xy()
+                    .distance(blast_event.location)
                     <= 100.0
                 {
                     // blasted
@@ -97,21 +105,53 @@ fn apply_blast_damage(
 
 fn handle_damaged(
     mut commands: Commands,
-    mut damaged_query: Query<(Entity, &mut Sprite, &mut Damaged), (With<Enemy>)>,
+    mut damaged_query: Query<(Entity, &mut Sprite, &mut Damaged, Option<&Moving>), (With<Enemy>, Without<Dead>)>,
     time: Res<Time>,
 ) {
-    for (entity, mut sprite, mut damaged) in damaged_query {
+    for (entity, mut sprite, mut damaged, maybe_moving) in damaged_query {
+        // stop movment if we damage it
+        if maybe_moving.is_some() {
+            commands.entity(entity).try_remove::<Moving>();
+        }
+
         damaged.timer.tick(time.delta());
         let remaining = (damaged.timer.remaining_secs() * 10.0) as u32;
         if remaining % 2 == 0 {
-            sprite.color = Color::linear_rgb(1.0, 0.0, 0.0);
+            sprite.color = Color::srgb(1.0, 0.0, 0.0);
         } else {
-            sprite.color = Color::linear_rgb(1.0, 1.0, 1.0);
+            sprite.color = Color::srgb(1.0, 1.0, 1.0);
         }
 
         if damaged.timer.just_finished() {
-            sprite.color = Color::linear_rgb(1.0, 1.0, 1.0);
-            commands.entity(entity).remove::<Damaged>();
+            sprite.color = Color::srgb(1.0, 1.0, 1.0);
+            commands
+                .entity(entity)
+                .remove::<Damaged>()
+                // resume movement
+                .insert(Moving);
+        }
+    }
+}
+
+fn handle_dead(
+    mut commands: Commands,
+    mut dead_query: Query<(Entity, &mut Sprite, &mut Dead, Option<&Moving>), With<Enemy>>,
+    time: Res<Time>,
+) {
+    for (entity, mut sprite, mut dead, maybe_moving) in &mut dead_query {
+        // stop movment if dead it
+        if maybe_moving.is_some() {
+            commands.entity(entity).try_remove::<Moving>();
+        }
+
+        dead.timer.tick(time.delta());
+
+        let frac = dead.timer.fraction_remaining();
+        info!("frac till ded: {}", frac);
+        sprite.color = Color::srgba(1.0, 1.0, 1.0, frac);
+
+        if dead.timer.just_finished() {
+            commands.entity(entity).despawn();
         }
     }
 }

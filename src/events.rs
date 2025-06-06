@@ -15,5 +15,5 @@ pub struct BlastEvent {
 #[derive(Event)]
 pub struct DamageEvent {
     pub target: Entity,
-    pub amount: u32,
+    pub amount: i32,
 }

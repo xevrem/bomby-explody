@@ -87,8 +87,7 @@ pub struct Enemy;
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Health {
-    pub current: u32,
-    pub max: u32,
+    pub current: i32,
 }
 
 #[derive(Component, Reflect)]
