@@ -42,7 +42,7 @@ fn tick_enemy_spawner(
     enemy_assets: Res<EnemyAssets>,
     mut entropy: GlobalEntropy<WyRand>,
 ) {
-    if enemy_query.iter().count() < spawner.max {
+    if enemy_query.iter().count() <= spawner.max {
         spawner.timer.tick(timer.delta());
 
         if spawner.timer.just_finished() {
