@@ -28,7 +28,14 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        (chain_blast, explode_exploding_bombs)
+        chain_blast
+            .in_set(AppSystems::Events)
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
+    );
+    app.add_systems(
+        Update,
+        explode_exploding_bombs
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),

@@ -1,4 +1,7 @@
-use crate::{assets::AssetsState, components::*, events::BlastEvent};
+use crate::{
+    assets::AssetsState, components::*, events::BlastEvent, AppSystems, GameplaySystems,
+    PausableSystems,
+};
 use avian2d::parry::simba::scalar::SupersetOf;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -6,6 +9,13 @@ use bevy_asset_loader::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<EnemyAssets>(),
+    );
+    app.add_systems(
+        Update,
+        apply_blast_damage
+            .in_set(AppSystems::Events)
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
     );
 }
 
