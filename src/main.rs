@@ -11,6 +11,7 @@ mod components;
 mod constants;
 mod controlls;
 mod entities;
+mod events;
 mod input;
 mod levels;
 mod menus;
@@ -78,6 +79,7 @@ impl Plugin for AppPlugin {
             components::plugin,
             controlls::plugin,
             entities::plugin,
+            events::plugin,
             levels::plugin,
             menus::plugin,
             movement::plugin,
