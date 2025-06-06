@@ -60,7 +60,9 @@ pub struct Damageable;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct Damaged;
+pub struct Damaged {
+    pub timer: Timer,
+}
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
