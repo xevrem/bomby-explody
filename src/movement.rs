@@ -23,7 +23,6 @@ fn apply_movement(
     }
 }
 
-
 fn apply_screen_wrap(
     window: Single<&Window, With<PrimaryWindow>>,
     mut wrap_query: Query<&mut Transform, With<ScreenWrap>>,
