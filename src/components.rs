@@ -56,6 +56,12 @@ pub struct Bomb {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Countdown {
+    pub timer: Timer,
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Damageable;
 
 #[derive(Component, Reflect)]
@@ -155,6 +161,13 @@ pub struct Spawner {
     pub max: usize,
     pub timer: Timer,
 }
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct TargetPosition {
+    pub position: Vec2,
+}
+
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]

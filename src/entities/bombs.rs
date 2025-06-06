@@ -2,6 +2,7 @@ use crate::{
     assets::AssetsState,
     audio::{sound_effect, SfxAssets},
     components::*,
+    constants::SCREEN_WIDTH,
     events::BlastEvent,
     screens::Screen,
     vfx::{explosion::create_explosion_vfx, VfxAssets},
@@ -35,7 +36,7 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        explode_exploding_bombs
+        (explode_exploding_bombs, lerp_towards_target)
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
@@ -60,6 +61,10 @@ pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32) -> impl Bu
         Bomb {
             timer: Timer::from_seconds(timeout, TimerMode::Once),
         },
+        // for target position lerp
+        Countdown {
+            timer: Timer::from_seconds(0.5, TimerMode::Once),
+        },
         StateScoped(Screen::Gameplay),
         Sprite {
             image: assets.ball.clone(),
@@ -71,7 +76,8 @@ pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32) -> impl Bu
             custom_size: Some(Vec2::splat(64.0)),
             ..default()
         },
-        Transform::from_translation(position.extend(0.0).clone()),
+        TargetPosition { position },
+        Transform::from_translation(Vec3::new(-SCREEN_WIDTH / 2.0, 0., 0.)),
         AnimationConfig::new(0, 8, 6),
         Animating,
     )
@@ -212,6 +218,26 @@ fn countdown_to_exploding(
         if will_explode.timer.just_finished() {
             // BOOM
             commands.entity(entity).insert(Exploding);
+        }
+    }
+}
+
+fn lerp_towards_target(
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut Transform, &TargetPosition, &mut Countdown), With<Bomb>>,
+    time: Res<Time>,
+) {
+    for (entity, mut trans, target_pos, mut countdown) in &mut query {
+        countdown.timer.tick(time.delta());
+        if countdown.timer.just_finished() {
+            commands.entity(entity).remove::<TargetPosition>();
+        } else {
+            let new_pos = trans
+                .translation
+                .xy()
+                .lerp(target_pos.position, countdown.timer.fraction())
+                .extend(0.0);
+            trans.translation = new_pos;
         }
     }
 }
