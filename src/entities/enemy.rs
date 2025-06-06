@@ -33,6 +33,7 @@ pub fn create_enemy(
         Animating,
         MovementConfig::from_vec2(movement).with_speed_as_screen_width_percent(speed_percent),
         Moving,
+        ScreenWrap,
         Transform::from_translation(position.extend(0.0)),
     )
 }

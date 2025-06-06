@@ -107,6 +107,10 @@ pub struct Moving;
 #[reflect(Component)]
 pub struct Music;
 
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct ScreenWrap;
+
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
 /// general "sound effect" category (e.g. footsteps, the sound of a magic spell, a door opening).
 ///
