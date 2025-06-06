@@ -92,6 +92,10 @@ pub struct Health {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Level;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct MovementConfig {
     /// direction of movement
     pub direction: Vec2,
