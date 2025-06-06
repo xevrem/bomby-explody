@@ -185,16 +185,15 @@ fn chain_blast(
     >,
 ) {
     if blast_reader.len() > 0 {
-        // TODO: process events
         for blast in blast_reader.read() {
-            // if let Ok((bomb_ent, bomb_trans)) = bomb_query.get(blast.source) {
             for (bomb_ent, bomb_trans) in &mut bomb_query {
+                // skip if they're the same
                 if bomb_ent == blast.source {
-                    // skip if they're the same
                     continue;
-                } else if blast.location.distance(bomb_trans.translation().truncate()) < blast.range
+                }
+                // other bomb within distance, ASPLODE
+                else if blast.location.distance(bomb_trans.translation().truncate()) < blast.range
                 {
-                    // other bomb within distance, ASPLODE
                     mark_bomb_for_explode(&mut commands, bomb_ent, 0.25);
                 }
             }
