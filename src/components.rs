@@ -151,7 +151,10 @@ pub struct SoundEffect;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct Spawner;
+pub struct Spawner {
+    pub max: usize,
+    pub timer: Timer,
+}
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
