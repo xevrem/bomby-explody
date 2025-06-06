@@ -4,7 +4,6 @@ use crate::{
     events::{BlastEvent, DamageEvent},
     AppSystems, GameplaySystems, PausableSystems,
 };
-use avian2d::parry::simba::scalar::SupersetOf;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
@@ -59,7 +58,6 @@ pub fn create_enemy(
 }
 
 fn apply_blast_damage(
-    mut commands: Commands,
     mut blast_reader: EventReader<BlastEvent>,
     mut damage_writer: EventWriter<DamageEvent>,
     blast_query: Query<&GlobalTransform, Without<Enemy>>,
