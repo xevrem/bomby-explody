@@ -9,6 +9,14 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
+#[derive(AssetCollection, Resource)]
+pub struct EnemyAssets {
+    #[asset(path = "images/enemies.png")]
+    #[asset(image(sampler(filter = nearest)))]
+    enemies: Handle<Image>,
+    #[asset(texture_atlas_layout(tile_size_x = 30, tile_size_y = 30, columns = 4, rows = 48))]
+    layout: Handle<TextureAtlasLayout>,
+}
 pub fn create_enemy(
     enemy_assets: &EnemyAssets,
     index: usize,
@@ -36,13 +44,4 @@ pub fn create_enemy(
         ScreenWrap,
         Transform::from_translation(position.extend(0.0)),
     )
-}
-
-#[derive(AssetCollection, Resource)]
-pub struct EnemyAssets {
-    #[asset(path = "images/enemies.png")]
-    #[asset(image(sampler(filter = nearest)))]
-    enemies: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 30, tile_size_y = 30, columns = 4, rows = 48))]
-    layout: Handle<TextureAtlasLayout>,
 }
