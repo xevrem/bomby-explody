@@ -1,4 +1,4 @@
-use crate::{assets::AssetsState, components::*};
+use crate::{assets::AssetsState, components::*, events::BlastEvent};
 use avian2d::parry::simba::scalar::SupersetOf;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
