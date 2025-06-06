@@ -1,5 +1,11 @@
 use crate::{
-    assets::AssetsState, audio::{sound_effect, SfxAssets}, components::*, events::BlastEvent, screens::Screen, vfx::{explosion::create_explosion_vfx, VfxAssets}, AppSystems, GameplaySystems, PausableSystems
+    assets::AssetsState,
+    audio::{sound_effect, SfxAssets},
+    components::*,
+    events::BlastEvent,
+    screens::Screen,
+    vfx::{explosion::create_explosion_vfx, VfxAssets},
+    AppSystems, GameplaySystems, PausableSystems,
 };
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -40,7 +46,6 @@ pub struct BombAssets {
     #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 2))]
     pub ball_layout: Handle<TextureAtlasLayout>,
 }
-
 
 pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32) -> impl Bundle {
     (
