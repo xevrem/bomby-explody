@@ -18,6 +18,13 @@ pub(super) fn plugin(app: &mut App) {
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
     );
+    app.add_systems(
+        Update,
+        handle_damaged
+            .in_set(AppSystems::Update)
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
+    );
 }
 
 #[derive(AssetCollection, Resource)]
@@ -86,4 +93,25 @@ fn apply_blast_damage(
     }
 
     Ok(())
+}
+
+fn handle_damaged(
+    mut commands: Commands,
+    mut damaged_query: Query<(Entity, &mut Sprite, &mut Damaged), (With<Enemy>)>,
+    time: Res<Time>,
+) {
+    for (entity, mut sprite, mut damaged) in damaged_query {
+        damaged.timer.tick(time.delta());
+        let remaining = (damaged.timer.remaining_secs() * 10.0) as u32;
+        if remaining % 2 == 0 {
+            sprite.color = Color::linear_rgb(1.0, 0.0, 0.0);
+        } else {
+            sprite.color = Color::linear_rgb(1.0, 1.0, 1.0);
+        }
+
+        if damaged.timer.just_finished() {
+            sprite.color = Color::linear_rgb(1.0, 1.0, 1.0);
+            commands.entity(entity).remove::<Damaged>();
+        }
+    }
 }
