@@ -24,7 +24,7 @@ fn apply_damage_to_hp(
             if health.current <= 0 {
                 // ded
                 commands.entity(entity).insert_if_new(Dead {
-                    timer: Timer::from_seconds(1.0, TimerMode::Once),
+                    timer: Timer::from_seconds(0.5, TimerMode::Once),
                 });
             } else {
                 // for damage effects later

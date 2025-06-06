@@ -147,7 +147,6 @@ fn handle_dead(
         dead.timer.tick(time.delta());
 
         let frac = dead.timer.fraction_remaining();
-        info!("frac till ded: {}", frac);
         sprite.color = Color::srgba(1.0, 1.0, 1.0, frac);
 
         if dead.timer.just_finished() {
