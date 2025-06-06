@@ -10,4 +10,25 @@ player blows them up, getting more points for chain reactions
 
 * Features
 
+** bugs attacking base
+
+*** hit base, damage base
+
+*** hit base, with others nearby, chain-asplode
+
+**** chain asplode does more damage!
+
+*** spawned randomly opposite side to base
+
+** bombs fired by user to blow up bugs
+*** bombs stun bugs
+
+*** limited num bombs
+
+*** gain more over time
+
+*** bombs can chain for more damage
+
+** Survive as long as possible
+
 * Polish Features
