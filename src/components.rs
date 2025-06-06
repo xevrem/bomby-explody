@@ -60,8 +60,12 @@ pub struct Damageable;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct Damaged {
-    pub amount: u32,
+pub struct Damaged;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Dead {
+    pub timer: Timer,
 }
 
 #[derive(Component, Reflect)]
