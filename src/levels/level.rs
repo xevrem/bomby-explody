@@ -4,10 +4,7 @@ use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
 use crate::{
-    audio::music,
-    constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
-    entities::enemy::{create_enemy, EnemyAssets},
-    screens::Screen,
+    audio::music, components::Level, constants::{SCREEN_HEIGHT, SCREEN_WIDTH}, entities::enemy::{create_enemy, EnemyAssets}, screens::Screen
 };
 
 #[derive(Resource, AssetCollection, Reflect)]
@@ -26,34 +23,35 @@ pub fn spawn_level(
 ) {
     commands.spawn((
         Name::new("Level"),
+        Level,
         Transform::default(),
         Visibility::default(),
         StateScoped(Screen::Gameplay),
         children![
-            create_enemy(
-                &enemy_assets,
-                0,
-                // center right side of screen
-                Vec2::new(SCREEN_WIDTH / 2.0, 0.0),
-                Vec2::new(-1., 0.),
-                0.1
-            ),
-            create_enemy(
-                &enemy_assets,
-                0,
-                // center right side of screen
-                Vec2::new(SCREEN_WIDTH / 2.0, 180.),
-                Vec2::new(-1., 0.),
-                0.15
-            ),
-            create_enemy(
-                &enemy_assets,
-                0,
-                // center right side of screen
-                Vec2::new(SCREEN_WIDTH / 2., -180.0),
-                Vec2::new(-1., 0.),
-                0.2
-            ),
+            // create_enemy(
+            //     &enemy_assets,
+            //     0,
+            //     // center right side of screen
+            //     Vec2::new(SCREEN_WIDTH / 2.0, 0.0),
+            //     Vec2::new(-1., 0.),
+            //     0.1
+            // ),
+            // create_enemy(
+            //     &enemy_assets,
+            //     0,
+            //     // center right side of screen
+            //     Vec2::new(SCREEN_WIDTH / 2.0, 180.),
+            //     Vec2::new(-1., 0.),
+            //     0.15
+            // ),
+            // create_enemy(
+            //     &enemy_assets,
+            //     0,
+            //     // center right side of screen
+            //     Vec2::new(SCREEN_WIDTH / 2., -180.0),
+            //     Vec2::new(-1., 0.),
+            //     0.2
+            // ),
             (
                 Name::new("Gameplay Music"),
                 music(level_assets.music.clone())
