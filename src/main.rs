@@ -100,6 +100,7 @@ impl Plugin for AppPlugin {
             Update,
             (
                 AppSystems::TickTimers,
+                AppSystems::Events,
                 AppSystems::RecordInput,
                 AppSystems::Update,
             )
@@ -123,6 +124,8 @@ impl Plugin for AppPlugin {
 enum AppSystems {
     /// Tick timers.
     TickTimers,
+    /// event response handling
+    Events,
     /// Record player input.
     RecordInput,
     /// Do everything else (consider splitting this into further variants).
