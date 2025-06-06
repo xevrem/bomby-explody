@@ -20,14 +20,15 @@ fn apply_damage_to_hp(
         for damage in damage_events.read() {
             let (entity, mut health) = query.get_mut(damage.target)?;
             health.current -= damage.amount;
-            // for damage effects later
-            commands.entity(entity).insert(Damaged {
-                timer: Timer::from_seconds(0.5, TimerMode::Once),
-            });
 
             if health.current <= 0 {
                 // ded
                 commands.entity(entity).insert(Dead {
+                    timer: Timer::from_seconds(0.5, TimerMode::Once),
+                });
+            } else {
+                // for damage effects later
+                commands.entity(entity).insert_if_new(Damaged {
                     timer: Timer::from_seconds(0.5, TimerMode::Once),
                 });
             }
