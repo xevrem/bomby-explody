@@ -1,6 +1,8 @@
 use crate::{
-    assets::AssetsState, components::*, events::BlastEvent, AppSystems, GameplaySystems,
-    PausableSystems,
+    assets::AssetsState,
+    components::*,
+    events::{BlastEvent, DamageEvent},
+    AppSystems, GameplaySystems, PausableSystems,
 };
 use avian2d::parry::simba::scalar::SupersetOf;
 use bevy::prelude::*;
@@ -58,15 +60,16 @@ pub fn create_enemy(
 
 fn apply_blast_damage(
     mut commands: Commands,
-    mut blast_events: EventReader<BlastEvent>,
+    mut blast_reader: EventReader<BlastEvent>,
+    mut damage_writer: EventWriter<DamageEvent>,
     blast_query: Query<&GlobalTransform, Without<Enemy>>,
     enemy_query: Query<
         (Entity, &GlobalTransform),
         (With<Enemy>, With<Damageable>, With<Blastable>),
     >,
 ) -> Result {
-    if !blast_events.is_empty() {
-        for blast_event in blast_events.read() {
+    if !blast_reader.is_empty() {
+        for blast_event in blast_reader.read() {
             let blast_trans = blast_query.get(blast_event.source)?;
             for (enemy, enemy_trans) in &enemy_query {
                 if enemy_trans
@@ -75,7 +78,10 @@ fn apply_blast_damage(
                     <= 100.0
                 {
                     // blasted
-                    commands.entity(enemy).insert(Damaged { amount: 1 });
+                    damage_writer.write(DamageEvent {
+                        target: enemy,
+                        amount: 1,
+                    });
                 }
             }
         }
