@@ -46,8 +46,22 @@ impl AnimationConfig {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Blastable;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Bomb {
     pub timer: Timer,
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Damageable;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Damaged {
+    pub amount: u32,
 }
 
 #[derive(Component, Reflect)]
@@ -63,6 +77,13 @@ pub struct Explosion {
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Enemy;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Health {
+    pub current: u32,
+    pub max: u32,
+}
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
