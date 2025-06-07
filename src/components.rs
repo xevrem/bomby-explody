@@ -164,10 +164,15 @@ pub struct Spawner {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Speed {
+    pub value: f32,
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct TargetPosition {
     pub position: Vec2,
 }
-
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]

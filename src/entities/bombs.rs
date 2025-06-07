@@ -55,15 +55,20 @@ pub struct BombAssets {
     pub ball_layout: Handle<TextureAtlasLayout>,
 }
 
-pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32) -> impl Bundle {
+pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32, speed: f32) -> impl Bundle {
+    let start_pos =Vec3::new(-SCREEN_WIDTH / 2.0, 0., 0.);
+    let distance = start_pos.xy().distance(position);
+    let lerp_time = distance / speed;
     (
         Name::new("Bomb"),
+        AnimationConfig::new(0, 8, 6),
+        Animating,
         Bomb {
             timer: Timer::from_seconds(timeout, TimerMode::Once),
         },
         // for target position lerp
         Countdown {
-            timer: Timer::from_seconds(0.5, TimerMode::Once),
+            timer: Timer::from_seconds(lerp_time, TimerMode::Once),
         },
         StateScoped(Screen::Gameplay),
         Sprite {
@@ -77,9 +82,7 @@ pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32) -> impl Bu
             ..default()
         },
         TargetPosition { position },
-        Transform::from_translation(Vec3::new(-SCREEN_WIDTH / 2.0, 0., 0.)),
-        AnimationConfig::new(0, 8, 6),
-        Animating,
+        Transform::from_translation(start_pos),
     )
 }
 
@@ -106,7 +109,7 @@ fn place_bomb_on_click(
             camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
         {
             // let location = trigger.pointer_location.position;
-            commands.spawn(create_bomb(&assets, location, 2.75));
+            commands.spawn(create_bomb(&assets, location, 2.75, 200.0));
         }
     }
 }
