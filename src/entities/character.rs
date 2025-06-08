@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
-use crate::{assets::AssetsState, components::*, constants::SCREEN_WIDTH,     screens::Screen,
-};
+use crate::{assets::AssetsState, components::*, constants::SCREEN_WIDTH, screens::Screen};
 
 pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
@@ -25,9 +24,7 @@ pub struct CharacterAssets {
     pub character_idle_layout: Handle<TextureAtlasLayout>,
 }
 
-pub fn create_character(
-    assets: &CharacterAssets,
-) -> impl Bundle {
+pub fn create_character(assets: &CharacterAssets) -> impl Bundle {
     let start_index = 8;
     let start_pos = Vec3::new(-SCREEN_WIDTH / 2.0 + 24.0, 0.0, 0.0);
     (
@@ -41,7 +38,7 @@ pub fn create_character(
                 index: start_index,
                 layout: assets.character_idle_layout.clone(),
             }),
-            custom_size: Some(Vec2::new(64.0,64.0)),
+            custom_size: Some(Vec2::new(64.0, 64.0)),
             ..default()
         },
         Transform::from_translation(start_pos),

@@ -105,7 +105,10 @@ fn apply_blast_damage(
 
 fn handle_damaged(
     mut commands: Commands,
-    mut damaged_query: Query<(Entity, &mut Sprite, &mut Damaged, Option<&Moving>), (With<Enemy>, Without<Dead>)>,
+    mut damaged_query: Query<
+        (Entity, &mut Sprite, &mut Damaged, Option<&Moving>),
+        (With<Enemy>, Without<Dead>),
+    >,
     time: Res<Time>,
 ) {
     for (entity, mut sprite, mut damaged, maybe_moving) in damaged_query {
