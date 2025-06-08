@@ -7,7 +7,7 @@ use rand::prelude::*;
 use crate::{
     assets::AssetsState,
     components::*,
-    constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
+    constants::{NUM_TILES_X, NUM_TILES_Y, SCREEN_HEIGHT, SCREEN_WIDTH, TILE_SIZE},
     screens::Screen,
 };
 
@@ -41,12 +41,12 @@ pub fn create_background(
             Transform::from_xyz(-SCREEN_WIDTH / 2. + 8., -SCREEN_HEIGHT / 2. + 8., 0.),
         ))
         .with_children(|builder| {
-            for x in 0..80 {
-                for y in 0..45 {
+            for x in 0..NUM_TILES_X {
+                for y in 0..NUM_TILES_Y {
                     let val = entropy.random_range(0..3);
                     builder.spawn(create_tile(
-                        (16 * x) as f32,
-                        (16 * y) as f32,
+                        TILE_SIZE * x as f32,
+                        TILE_SIZE * y as f32,
                         32 + val,
                         &background_assets,
                     ));
@@ -66,6 +66,7 @@ fn create_tile(x: f32, y: f32, index: usize, assets: &BackgroundAssets) -> impl 
             }),
             // darken grass
             color: Color::srgb(0.6, 0.6, 0.6),
+            custom_size: Some(Vec2::splat(TILE_SIZE)),
             ..default()
         },
         Transform::from_xyz(x, y, 0.0),
