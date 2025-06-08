@@ -56,7 +56,7 @@ pub struct BombAssets {
 }
 
 pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32, speed: f32) -> impl Bundle {
-    let start_pos =Vec3::new(-SCREEN_WIDTH / 2.0, 0., 0.);
+    let start_pos = Vec3::new(-SCREEN_WIDTH / 2.0 + 48.0, -12.0, 0.0);
     let distance = start_pos.xy().distance(position);
     let lerp_time = distance / speed;
     (
