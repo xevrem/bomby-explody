@@ -56,6 +56,10 @@ pub struct Bomb {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Character;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Countdown {
     pub timer: Timer,
 }
