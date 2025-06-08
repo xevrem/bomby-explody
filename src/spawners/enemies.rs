@@ -30,6 +30,7 @@ pub fn create_enemy_spawner(mut commands: Commands) {
             max: 5,
             timer: Timer::from_seconds(1.0, TimerMode::Repeating),
         },
+        StateScoped(Screen::Gameplay),
     ));
 }
 

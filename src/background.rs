@@ -37,6 +37,7 @@ pub fn create_background(
             Name::new("Background"),
             Background,
             InheritedVisibility::VISIBLE,
+            StateScoped(Screen::Gameplay),
             Transform::from_xyz(-SCREEN_WIDTH / 2. + 8., -SCREEN_HEIGHT / 2. + 8., 0.),
         ))
         .with_children(|builder| {
@@ -63,6 +64,8 @@ fn create_tile(x: f32, y: f32, index: usize, assets: &BackgroundAssets) -> impl 
                 index,
                 layout: assets.background_layout.clone(),
             }),
+            // darken grass
+            color: Color::srgb(0.6, 0.6, 0.6),
             ..default()
         },
         Transform::from_xyz(x, y, 0.0),
