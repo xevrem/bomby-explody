@@ -7,6 +7,7 @@
 mod animation;
 mod assets;
 mod audio;
+mod background;
 mod components;
 mod constants;
 mod controlls;
@@ -77,12 +78,16 @@ impl Plugin for AppPlugin {
         app.add_plugins((
             animation::plugin,
             audio::plugin,
+            background::plugin,
             components::plugin,
             controlls::plugin,
             entities::plugin,
             events::plugin,
             health::plugin,
             levels::plugin,
+        ));
+
+        app.add_plugins((
             menus::plugin,
             movement::plugin,
             screens::plugin,
