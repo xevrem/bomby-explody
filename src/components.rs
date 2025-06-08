@@ -46,6 +46,10 @@ impl AnimationConfig {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Background;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Blastable;
 
 #[derive(Component, Reflect)]
