@@ -23,6 +23,7 @@ mod random;
 mod screens;
 mod spawners;
 mod theme;
+mod ui;
 mod vfx;
 // dev specific
 #[cfg(feature = "dev")]
@@ -93,6 +94,7 @@ impl Plugin for AppPlugin {
             screens::plugin,
             spawners::plugin,
             theme::plugin,
+            ui::plugin,
             vfx::plugin,
             // dev specific
             #[cfg(feature = "dev")]
