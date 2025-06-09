@@ -42,6 +42,7 @@ pub fn create_character(assets: &CharacterAssets) -> impl Bundle {
             custom_size: Some(Vec2::new(64.0, 64.0)),
             ..default()
         },
+        StateScoped(Screen::Gameplay),
         Transform::from_translation(start_pos),
     )
 }
