@@ -29,6 +29,24 @@ pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
     )
 }
 
+pub fn ul_ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
+    (
+        Name::new(name),
+        Node {
+            position_type: PositionType::Absolute,
+            width: Val::Percent(50.0),
+            height: Val::Percent(50.0),
+            align_items: AlignItems::Start,
+            justify_content: JustifyContent::Start,
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(10.0),
+            ..default()
+        },
+        // Don't block picking events for other UI roots.
+        Pickable::IGNORE,
+    )
+}
+
 /// A simple header label. Bigger than [`label`].
 pub fn header(text: impl Into<String>) -> impl Bundle {
     (
