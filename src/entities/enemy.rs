@@ -13,13 +13,6 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        apply_blast_damage
-            .in_set(AppSystems::Events)
-            .in_set(PausableSystems)
-            .in_set(GameplaySystems),
-    );
-    app.add_systems(
-        Update,
         (handle_damaged, handle_dead)
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
@@ -67,33 +60,6 @@ pub fn create_enemy(
     )
 }
 
-fn apply_blast_damage(
-    mut blast_reader: EventReader<BlastEvent>,
-    mut damage_writer: EventWriter<DamageEvent>,
-    enemy_query: Query<(Entity, &GlobalTransform), (With<Damageable>, Without<Dead>)>,
-) -> Result {
-    if !blast_reader.is_empty() {
-        for blast_event in blast_reader.read() {
-            // let blast_trans = blast_query.get(blast_event.source)?;
-            for (enemy, enemy_trans) in &enemy_query {
-                if enemy_trans
-                    .translation()
-                    .xy()
-                    .distance(blast_event.location)
-                    <= 100.0
-                {
-                    // blasted
-                    damage_writer.write(DamageEvent {
-                        target: enemy,
-                        amount: 1,
-                    });
-                }
-            }
-        }
-    }
-
-    Ok(())
-}
 
 fn handle_damaged(
     mut commands: Commands,

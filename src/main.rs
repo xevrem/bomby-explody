@@ -11,6 +11,7 @@ mod background;
 mod components;
 mod constants;
 mod controlls;
+mod damage;
 mod entities;
 mod events;
 mod health;
@@ -82,12 +83,12 @@ impl Plugin for AppPlugin {
             background::plugin,
             components::plugin,
             controlls::plugin,
+damage::plugin,
             entities::plugin,
             events::plugin,
             health::plugin,
             levels::plugin,
         ));
-
         app.add_plugins((
             menus::plugin,
             movement::plugin,
@@ -96,6 +97,8 @@ impl Plugin for AppPlugin {
             theme::plugin,
             ui::plugin,
             vfx::plugin,
+        ));
+        app.add_plugins((
             // dev specific
             #[cfg(feature = "dev")]
             dev_tools::plugin,
