@@ -38,11 +38,13 @@ pub fn create_background(
             Background,
             InheritedVisibility::VISIBLE,
             StateScoped(Screen::Gameplay),
-            Transform::from_xyz(-SCREEN_WIDTH / 2. + 8., -SCREEN_HEIGHT / 2. + 8., 0.),
+            Transform::from_xyz(-SCREEN_WIDTH / 2.0, -SCREEN_HEIGHT / 2.0, 0.),
         ))
         .with_children(|builder| {
-            for x in 0..NUM_TILES_X {
-                for y in 0..NUM_TILES_Y {
+            // because standard screen reolutions dont divide evenly
+            // with powers of 2, we do +- 1 with the range
+            for x in (-1)..(NUM_TILES_X + 1) {
+                for y in (-1)..(NUM_TILES_Y + 1) {
                     let val = entropy.random_range(0..3);
                     builder.spawn(create_tile(
                         TILE_SIZE * x as f32,
