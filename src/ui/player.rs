@@ -22,10 +22,34 @@ pub fn create_hp_ui(mut commands: Commands) {
         widget::ul_ui_root("Player HP UI"),
         GlobalZIndex(2),
         StateScoped(Screen::Gameplay),
-        children![
-            widget::label("Health:"),
-            (widget::label("100"), PlayerLabel, HealthLabel,)
-        ],
+        children![(
+            Name::new("hp ui grid"),
+            Node {
+                display: Display::Grid,
+                row_gap: Val::Px(10.0),
+                column_gap: Val::Px(10.0),
+                grid_template_columns: RepeatedGridTrack::px(2, 100.0),
+                ..default()
+            },
+            children![
+                (
+                    widget::label("Health:"),
+                    Node {
+                        justify_self: JustifySelf::Start,
+                        ..default()
+                    }
+                ),
+                (
+                    widget::label("100"),
+                    Node {
+                        justify_self: JustifySelf::Start,
+                        ..default()
+                    },
+                    PlayerLabel,
+                    HealthLabel,
+                )
+            ]
+        )],
     ));
 }
 
