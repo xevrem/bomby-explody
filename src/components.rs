@@ -103,6 +103,9 @@ pub struct Enemy;
 pub struct Health {
     pub current: i32,
 }
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct HealthLabel;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
@@ -150,6 +153,14 @@ pub struct Moving;
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
 pub struct Music;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Player;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct PlayerLabel;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
