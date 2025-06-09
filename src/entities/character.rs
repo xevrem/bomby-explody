@@ -32,6 +32,8 @@ pub fn create_character(assets: &CharacterAssets) -> impl Bundle {
         Animating,
         AnimationConfig::new(start_index, 4, 4),
         Character,
+        Damageable,
+        Health { current: 100 },
         Player,
         Sprite {
             image: assets.character_idle.clone(),
