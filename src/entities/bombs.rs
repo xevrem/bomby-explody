@@ -55,8 +55,14 @@ pub struct BombAssets {
     pub ball_layout: Handle<TextureAtlasLayout>,
 }
 
-pub fn create_bomb(assets: &BombAssets, position: Vec2, timeout: f32, speed: f32) -> impl Bundle {
-    let start_pos = Vec3::new(-SCREEN_WIDTH / 2.0 + 48.0, -12.0, 0.0);
+pub fn create_bomb(
+    assets: &BombAssets,
+    position: Vec2,
+    timeout: f32,
+    speed: f32,
+    player_pos: Vec3,
+) -> impl Bundle {
+    let start_pos = player_pos + Vec3::new(24.0, -12.0, 0.0);
     let distance = start_pos.xy().distance(position);
     let lerp_time = distance / speed;
     (
@@ -100,6 +106,7 @@ fn place_bomb_on_click(
     assets_state: Res<State<AssetsState>>,
     assets: Res<BombAssets>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
+    player_query: Single<&GlobalTransform, With<Player>>,
 ) {
     if screen_state.get() == &Screen::Gameplay && assets_state.get() == &AssetsState::GameplayReady
     {
@@ -109,7 +116,13 @@ fn place_bomb_on_click(
             camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
         {
             // let location = trigger.pointer_location.position;
-            commands.spawn(create_bomb(&assets, location, 2.75, 200.0));
+            commands.spawn(create_bomb(
+                &assets,
+                location,
+                2.75,
+                200.0,
+                player_query.translation(),
+            ));
         }
     }
 }
