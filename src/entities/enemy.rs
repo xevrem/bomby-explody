@@ -70,15 +70,7 @@ pub fn create_enemy(
 fn apply_blast_damage(
     mut blast_reader: EventReader<BlastEvent>,
     mut damage_writer: EventWriter<DamageEvent>,
-    enemy_query: Query<
-        (Entity, &GlobalTransform),
-        (
-            With<Enemy>,
-            With<Damageable>,
-            With<Blastable>,
-            Without<Dead>,
-        ),
-    >,
+    enemy_query: Query<(Entity, &GlobalTransform), (With<Damageable>, Without<Dead>)>,
 ) -> Result {
     if !blast_reader.is_empty() {
         for blast_event in blast_reader.read() {
