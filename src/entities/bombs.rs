@@ -194,8 +194,8 @@ fn explode_bomb(
 
     blast_writer.write(BlastEvent {
         source: entity,
-        location: transform.translation().truncate(),
-        range: 100.0,
+        location: transform.translation().xy(),
+        range: 50.0,
     });
 }
 
