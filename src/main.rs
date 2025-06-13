@@ -83,7 +83,7 @@ impl Plugin for AppPlugin {
             background::plugin,
             components::plugin,
             controlls::plugin,
-damage::plugin,
+            damage::plugin,
             entities::plugin,
             events::plugin,
             health::plugin,
