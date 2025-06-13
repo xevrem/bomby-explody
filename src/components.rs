@@ -207,6 +207,14 @@ pub struct TargetPosition {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct WasAttacking;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct WasMoving;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct WillExplode {
     pub timer: Timer,
 }
