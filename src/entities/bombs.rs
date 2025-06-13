@@ -4,6 +4,7 @@ use crate::{
     components::*,
     constants::SCREEN_WIDTH,
     events::BlastEvent,
+    menus::Menu,
     screens::Screen,
     vfx::{explosion::create_explosion_vfx, VfxAssets},
     AppSystems, GameplaySystems, PausableSystems,
@@ -20,6 +21,7 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_event::<BlastEvent>();
     app.add_systems(OnEnter(Screen::Gameplay), add_click_to_spawn_observer);
+    app.add_systems(OnEnter(Menu::None), add_click_to_spawn_observer);
     app.add_systems(
         Update,
         (bomb_timer_countdown, countdown_to_exploding)
@@ -92,11 +94,22 @@ pub fn create_bomb(
     )
 }
 
-fn add_click_to_spawn_observer(mut commands: Commands) {
-    commands.spawn((
-        StateScoped(Screen::Gameplay),
-        Observer::new(place_bomb_on_click),
-    ));
+fn add_click_to_spawn_observer(
+    mut commands: Commands,
+    prior: Option<Single<Entity, With<PlaceBombObserver>>>,
+) {
+    // if no observer exists, add it
+    if prior.is_none() {
+        commands.spawn((
+            // auto destroy observer:
+            //   if we open a menu
+            //   or leave the gameplay screen
+            StateScoped(Screen::Gameplay),
+            StateScoped(Menu::None),
+            Observer::new(place_bomb_on_click),
+            PlaceBombObserver,
+        ));
+    }
 }
 
 fn place_bomb_on_click(
