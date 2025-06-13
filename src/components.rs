@@ -89,6 +89,10 @@ pub struct Dead {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct EaseFunc<T>(pub EasingCurve<T>);
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Exploding;
 
 #[derive(Component, Reflect)]
