@@ -163,6 +163,10 @@ pub struct Music;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct PlaceBombObserver;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Player;
 
 #[derive(Component, Reflect)]
