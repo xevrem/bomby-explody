@@ -15,7 +15,7 @@ pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         tick_enemy_spawner
-            .in_set(AppSystems::Update)
+            .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
     );
@@ -28,7 +28,7 @@ pub fn create_enemy_spawner(mut commands: Commands) {
         Enemy,
         Spawner {
             max: 5,
-            timer: Timer::from_seconds(1.0, TimerMode::Repeating),
+            timer: Timer::from_seconds(3.0, TimerMode::Repeating),
         },
         StateScoped(Screen::Gameplay),
     ));
