@@ -43,6 +43,9 @@ impl AnimationConfig {
         Timer::from_seconds(1.0 / self.fps as f32, TimerMode::Once)
     }
 }
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Attacking;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
