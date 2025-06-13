@@ -1,11 +1,21 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
-use crate::{assets::AssetsState, components::*, constants::SCREEN_WIDTH, screens::Screen};
+use crate::{
+    assets::AssetsState, components::*, constants::SCREEN_WIDTH, menus::Menu, screens::Screen,
+    AppSystems, GameplaySystems, PausableSystems, Pause,
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<CharacterAssets>(),
+    );
+    app.add_systems(
+        Update,
+        (check_if_player_dead)
+            .in_set(AppSystems::Update)
+            .in_set(GameplaySystems)
+            .in_set(PausableSystems),
     );
 }
 
@@ -33,7 +43,7 @@ pub fn create_character(assets: &CharacterAssets) -> impl Bundle {
         AnimationConfig::new(start_index, 4, 4),
         Character,
         Damageable,
-        Health { current: 100 },
+        Health { current: 5 },
         Player,
         Sprite {
             image: assets.character_idle.clone(),
@@ -47,4 +57,16 @@ pub fn create_character(assets: &CharacterAssets) -> impl Bundle {
         StateScoped(Screen::Gameplay),
         Transform::from_translation(start_pos),
     )
+}
+
+fn check_if_player_dead(
+    player: Option<Single<Entity, (With<Player>, With<Dead>)>>,
+    mut next_menu: ResMut<NextState<Menu>>,
+    mut next_pause: ResMut<NextState<Pause>>
+) {
+    if player.is_some() {
+        // player is dead,
+        next_menu.set(Menu::GameOver);
+        next_pause.set(Pause(true));
+    }
 }
