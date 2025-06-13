@@ -93,6 +93,10 @@ pub struct EaseFunc<T>(pub EasingCurve<T>);
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Enemy;
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Exploding;
 
 #[derive(Component, Reflect)]
@@ -103,13 +107,10 @@ pub struct Explosion {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct Enemy;
-
-#[derive(Component, Reflect)]
-#[reflect(Component)]
 pub struct Health {
     pub current: i32,
 }
+
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct HealthLabel;
