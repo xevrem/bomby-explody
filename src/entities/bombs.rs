@@ -2,7 +2,7 @@ use crate::{
     assets::AssetsState,
     audio::{sound_effect, SfxAssets},
     components::*,
-    constants::SCREEN_WIDTH,
+    constants::{SCREEN_HALF_WIDTH, SCREEN_WIDTH},
     events::BlastEvent,
     menus::Menu,
     screens::Screen,
@@ -64,8 +64,10 @@ pub fn create_bomb(
     speed: f32,
     player_pos: Vec3,
 ) -> impl Bundle {
-    let start_pos = player_pos + Vec3::new(24.0, -100.0, 0.0);
+    let mut start_pos = player_pos + Vec3::new(24.0, 0.0, 0.0);
     let distance = start_pos.xy().distance(position);
+    let distance_frac = distance / SCREEN_HALF_WIDTH;
+    start_pos.y -= 100.0 * distance_frac;
     let lerp_time = distance / speed;
     (
         Name::new("Bomb"),
@@ -127,20 +129,20 @@ fn place_bomb_on_click(
 ) {
     // if screen_state.get() == &Screen::Gameplay && assets_state.get() == &AssetsState::GameplayReady
     // {
-        // info!("clicky {}", trigger.pointer_location.position);
-        let (camera, camera_trans) = *camera_query;
-        if let Ok(location) =
-            camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
-        {
-            // let location = trigger.pointer_location.position;
-            commands.spawn(create_bomb(
-                &assets,
-                location,
-                2.75,
-                500.0,
-                player_query.translation(),
-            ));
-        }
+    // info!("clicky {}", trigger.pointer_location.position);
+    let (camera, camera_trans) = *camera_query;
+    if let Ok(location) =
+        camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
+    {
+        // let location = trigger.pointer_location.position;
+        commands.spawn(create_bomb(
+            &assets,
+            location,
+            2.75,
+            500.0,
+            player_query.translation(),
+        ));
+    }
     // }
 }
 
@@ -277,8 +279,11 @@ fn move_towards_target(
         if countdown.timer.just_finished() {
             commands.entity(entity).remove::<TargetPosition>();
         } else {
+            let distance_frac =
+                trans.translation.xy().distance(target_pos.position) / SCREEN_HALF_WIDTH;
             let mut new_pos = bomb_toss.ease.sample_clamped(countdown.timer.fraction());
-            let bounce = bomb_toss.bounce.sample_clamped(countdown.timer.fraction()) * 100.0;
+            let bounce =
+                bomb_toss.bounce.sample_clamped(countdown.timer.fraction()) * 100.0 * distance_frac;
             new_pos.y += bounce;
             trans.translation = new_pos.extend(0.0);
         }
