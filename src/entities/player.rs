@@ -34,7 +34,7 @@ pub struct CharacterAssets {
     pub character_idle_layout: Handle<TextureAtlasLayout>,
 }
 
-pub fn create_character(assets: &CharacterAssets) -> impl Bundle {
+pub fn create_player_character(assets: &CharacterAssets, health: i32) -> impl Bundle {
     let start_index = 8;
     let start_pos = Vec3::new(-SCREEN_WIDTH / 2.0 + 24.0, 0.0, 0.0);
     (
@@ -43,7 +43,7 @@ pub fn create_character(assets: &CharacterAssets) -> impl Bundle {
         AnimationConfig::new(start_index, 4, 4),
         Character,
         Damageable,
-        Health { current: 5 },
+        Health { current: health },
         Player,
         Sprite {
             image: assets.character_idle.clone(),
