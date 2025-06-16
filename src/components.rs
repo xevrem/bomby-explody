@@ -63,6 +63,13 @@ pub struct Bomb {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct BombToss {
+    pub ease: EasingCurve<Vec2>,
+    pub bounce: EasingCurve<f32>
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Character;
 
 #[derive(Component, Reflect)]
