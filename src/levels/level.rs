@@ -12,7 +12,7 @@ use crate::{
     components::Level,
     constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::{
-        character::{create_character, CharacterAssets},
+        player::{create_character, CharacterAssets},
         enemy::{create_enemy, EnemyAssets},
     },
     screens::Screen,
