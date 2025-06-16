@@ -125,8 +125,8 @@ fn place_bomb_on_click(
     camera_query: Single<(&Camera, &GlobalTransform)>,
     player_query: Single<&GlobalTransform, With<Player>>,
 ) {
-    if screen_state.get() == &Screen::Gameplay && assets_state.get() == &AssetsState::GameplayReady
-    {
+    // if screen_state.get() == &Screen::Gameplay && assets_state.get() == &AssetsState::GameplayReady
+    // {
         // info!("clicky {}", trigger.pointer_location.position);
         let (camera, camera_trans) = *camera_query;
         if let Ok(location) =
@@ -141,7 +141,7 @@ fn place_bomb_on_click(
                 player_query.translation(),
             ));
         }
-    }
+    // }
 }
 
 fn bomb_timer_countdown(
@@ -280,11 +280,6 @@ fn move_towards_target(
             let mut new_pos = bomb_toss.ease.sample_clamped(countdown.timer.fraction());
             let bounce = bomb_toss.bounce.sample_clamped(countdown.timer.fraction()) * 100.0;
             new_pos.y += bounce;
-            // let new_pos = trans
-            //     .translation
-            //     .xy()
-            //     .lerp(target_pos.position, countdown.timer.fraction())
-            //     .extend(0.0);
             trans.translation = new_pos.extend(0.0);
         }
     }
