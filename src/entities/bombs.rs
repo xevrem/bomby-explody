@@ -38,7 +38,7 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        (explode_exploding_bombs, lerp_towards_target)
+        (explode_exploding_bombs, move_towards_target)
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
@@ -64,7 +64,7 @@ pub fn create_bomb(
     speed: f32,
     player_pos: Vec3,
 ) -> impl Bundle {
-    let start_pos = player_pos + Vec3::new(24.0, -12.0, 0.0);
+    let start_pos = player_pos + Vec3::new(24.0, -100.0, 0.0);
     let distance = start_pos.xy().distance(position);
     let lerp_time = distance / speed;
     (
@@ -73,6 +73,10 @@ pub fn create_bomb(
         Animating,
         Bomb {
             timer: Timer::from_seconds(timeout, TimerMode::Once),
+        },
+        BombToss {
+            ease: EasingCurve::new(start_pos.xy(), position, EaseFunction::Linear),
+            bounce: EasingCurve::new(1.0, 0.0, EaseFunction::BounceOut),
         },
         // for target position lerp
         Countdown {
@@ -133,7 +137,7 @@ fn place_bomb_on_click(
                 &assets,
                 location,
                 2.75,
-                200.0,
+                500.0,
                 player_query.translation(),
             ));
         }
@@ -254,22 +258,34 @@ fn countdown_to_exploding(
     }
 }
 
-fn lerp_towards_target(
+fn move_towards_target(
     mut commands: Commands,
-    mut query: Query<(Entity, &mut Transform, &TargetPosition, &mut Countdown), With<Bomb>>,
+    mut query: Query<
+        (
+            Entity,
+            &mut Transform,
+            &TargetPosition,
+            &mut Countdown,
+            &BombToss,
+        ),
+        With<Bomb>,
+    >,
     time: Res<Time>,
 ) {
-    for (entity, mut trans, target_pos, mut countdown) in &mut query {
+    for (entity, mut trans, target_pos, mut countdown, bomb_toss) in &mut query {
         countdown.timer.tick(time.delta());
         if countdown.timer.just_finished() {
             commands.entity(entity).remove::<TargetPosition>();
         } else {
-            let new_pos = trans
-                .translation
-                .xy()
-                .lerp(target_pos.position, countdown.timer.fraction())
-                .extend(0.0);
-            trans.translation = new_pos;
+            let mut new_pos = bomb_toss.ease.sample_clamped(countdown.timer.fraction());
+            let bounce = bomb_toss.bounce.sample_clamped(countdown.timer.fraction()) * 100.0;
+            new_pos.y += bounce;
+            // let new_pos = trans
+            //     .translation
+            //     .xy()
+            //     .lerp(target_pos.position, countdown.timer.fraction())
+            //     .extend(0.0);
+            trans.translation = new_pos.extend(0.0);
         }
     }
 }
