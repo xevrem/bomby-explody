@@ -1,8 +1,5 @@
 use crate::{
-    assets::AssetsState,
-    components::*,
-    constants::SCREEN_HALF_HEIGHT,
-    events::{BlastEvent, DamageEvent},
+    assets::AssetsState, components::*, constants::SCREEN_HALF_HEIGHT, events::DamageEvent,
     AppSystems, GameplaySystems, PausableSystems,
 };
 use bevy::prelude::*;
@@ -162,7 +159,7 @@ fn handle_dead(
 fn switch_to_attack_player(
     mut commands: Commands,
     enemy_query: Query<
-        (Entity, &GlobalTransform, &MovementConfig),
+        (Entity, &GlobalTransform),
         (
             With<Enemy>,
             Without<Player>,
@@ -173,11 +170,11 @@ fn switch_to_attack_player(
     player: Single<&GlobalTransform, (With<Player>, Without<Enemy>)>,
 ) {
     let player_position = player.translation().xy();
-    for (enemy, enemy_trans, move_config) in enemy_query {
+    for (enemy, enemy_trans) in enemy_query {
         let enemy_position = enemy_trans.translation().xy();
         let distance = enemy_position.distance(player_position);
         if distance <= SCREEN_HALF_HEIGHT {
-            let time_to_attack = (distance / move_config.speed) / 2.0;
+            let time_to_attack = (distance / 200.0) / 2.0;
 
             commands
                 .entity(enemy)
@@ -203,23 +200,16 @@ fn switch_to_attack_player(
 fn move_to_player(
     mut commands: Commands,
     mut enemy_query: Query<
-        (
-            Entity,
-            &mut Transform,
-            &TargetPosition,
-            &mut Countdown,
-            &mut EaseFunc<Vec2>,
-        ),
+        (Entity, &mut Transform, &mut Countdown, &EaseFunc<Vec2>),
         (With<Enemy>, With<Attacking>, Without<Dead>),
     >,
     player: Single<Entity, With<Player>>,
     time: Res<Time>,
     mut damage_writer: EventWriter<DamageEvent>,
 ) {
-    for (enemy, mut trans, target_pos, mut countdown, mut ease) in &mut enemy_query {
+    for (enemy, mut trans, mut countdown, ease) in &mut enemy_query {
         countdown.timer.tick(time.delta());
         if countdown.timer.just_finished() {
-            info!("WHY AM I NOT DEAD!?!?!?");
             // kill enemy
             commands
                 .entity(enemy)
