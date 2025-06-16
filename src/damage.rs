@@ -14,7 +14,7 @@ pub(super) fn plugin(app: &mut App) {
 fn apply_blast_damage(
     mut blast_reader: EventReader<BlastEvent>,
     mut damage_writer: EventWriter<DamageEvent>,
-    enemy_query: Query<(Entity, &GlobalTransform), (With<Damageable>, Without<Dead>)>,
+    enemy_query: Query<(Entity, &GlobalTransform), (With<Damageable>, Without<Dead>, With<Enemy>)>,
 ) -> Result {
     if !blast_reader.is_empty() {
         for blast_event in blast_reader.read() {
