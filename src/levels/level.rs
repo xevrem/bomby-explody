@@ -12,7 +12,7 @@ use crate::{
     components::Level,
     constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::{
-        character::{create_character, CharacterAssets},
+        player::{create_player_character, CharacterAssets},
         enemy::{create_enemy, EnemyAssets},
     },
     screens::Screen,
@@ -43,7 +43,7 @@ pub fn spawn_level(
             Visibility::default(),
             StateScoped(Screen::Gameplay),
             children![
-                create_character(&character_assets,),
+                create_player_character(&character_assets, 10),
                 (
                     Name::new("Gameplay Music"),
                     music(level_assets.music.clone())

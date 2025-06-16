@@ -48,7 +48,7 @@ fn tick_enemy_spawner(
 
         if spawner.timer.just_finished() {
             let half_height: f32 = SCREEN_HEIGHT / 2.0 - 64.0;
-            let speed: f32 = entropy.random_range(0.1..0.2);
+            let speed: f32 = entropy.random_range(0.05..0.1);
             let y_position: f32 = entropy.random_range(-half_height..half_height);
             let spawned = commands
                 .spawn(create_enemy(

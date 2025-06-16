@@ -2,7 +2,7 @@ use crate::{
     assets::AssetsState,
     audio::{sound_effect, SfxAssets},
     components::*,
-    constants::SCREEN_WIDTH,
+    constants::{SCREEN_HALF_WIDTH, SCREEN_WIDTH},
     events::BlastEvent,
     menus::Menu,
     screens::Screen,
@@ -38,7 +38,7 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_systems(
         Update,
-        (explode_exploding_bombs, lerp_towards_target)
+        (explode_exploding_bombs, move_towards_target)
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
@@ -64,8 +64,10 @@ pub fn create_bomb(
     speed: f32,
     player_pos: Vec3,
 ) -> impl Bundle {
-    let start_pos = player_pos + Vec3::new(24.0, -12.0, 0.0);
+    let mut start_pos = player_pos + Vec3::new(24.0, 0.0, 0.0);
     let distance = start_pos.xy().distance(position);
+    let distance_frac = distance / SCREEN_HALF_WIDTH;
+    start_pos.y -= 100.0 * distance_frac;
     let lerp_time = distance / speed;
     (
         Name::new("Bomb"),
@@ -73,6 +75,10 @@ pub fn create_bomb(
         Animating,
         Bomb {
             timer: Timer::from_seconds(timeout, TimerMode::Once),
+        },
+        BombToss {
+            ease: EasingCurve::new(start_pos.xy(), position, EaseFunction::Linear),
+            bounce: EasingCurve::new(1.0, 0.0, EaseFunction::BounceOut),
         },
         // for target position lerp
         Countdown {
@@ -121,23 +127,23 @@ fn place_bomb_on_click(
     camera_query: Single<(&Camera, &GlobalTransform)>,
     player_query: Single<&GlobalTransform, With<Player>>,
 ) {
-    if screen_state.get() == &Screen::Gameplay && assets_state.get() == &AssetsState::GameplayReady
+    // if screen_state.get() == &Screen::Gameplay && assets_state.get() == &AssetsState::GameplayReady
+    // {
+    // info!("clicky {}", trigger.pointer_location.position);
+    let (camera, camera_trans) = *camera_query;
+    if let Ok(location) =
+        camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
     {
-        // info!("clicky {}", trigger.pointer_location.position);
-        let (camera, camera_trans) = *camera_query;
-        if let Ok(location) =
-            camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
-        {
-            // let location = trigger.pointer_location.position;
-            commands.spawn(create_bomb(
-                &assets,
-                location,
-                2.75,
-                200.0,
-                player_query.translation(),
-            ));
-        }
+        // let location = trigger.pointer_location.position;
+        commands.spawn(create_bomb(
+            &assets,
+            location,
+            2.75,
+            500.0,
+            player_query.translation(),
+        ));
     }
+    // }
 }
 
 fn bomb_timer_countdown(
@@ -165,10 +171,11 @@ fn explode_exploding_bombs(
     assets: Res<VfxAssets>,
     sfx: Res<SfxAssets>,
     mut blast_writer: EventWriter<BlastEvent>,
-    mut query: Query<(Entity, &GlobalTransform), (With<Bomb>, With<Exploding>)>,
+    mut exploding_bomb_query: Query<(Entity, &GlobalTransform), (With<Bomb>, With<Exploding>)>,
     mut entropy: GlobalEntropy<WyRand>,
 ) {
-    for (entity, trans) in &mut query {
+    let count = exploding_bomb_query.iter().len();
+    for (entity, trans) in &mut exploding_bomb_query {
         explode_bomb(
             &mut commands,
             &assets,
@@ -177,6 +184,7 @@ fn explode_exploding_bombs(
             entity,
             &trans,
             &mut entropy,
+            count,
         );
     }
 }
@@ -189,6 +197,7 @@ fn explode_bomb(
     entity: Entity,
     transform: &GlobalTransform,
     entropy: &mut GlobalEntropy<WyRand>,
+    bomb_count: usize,
 ) {
     // destroy
     commands.entity(entity).despawn();
@@ -200,9 +209,9 @@ fn explode_bomb(
     ));
 
     if let Some(random_step) = sfx.bombs.choose(entropy.as_mut()) {
-        commands.spawn(sound_effect(random_step.clone(), 0.15));
-    } else {
-        warn!("no bomb sound :(");
+        if bomb_count < 5 {
+            commands.spawn(sound_effect(random_step.clone(), 0.15));
+        }
     }
 
     blast_writer.write(BlastEvent {
@@ -251,22 +260,32 @@ fn countdown_to_exploding(
     }
 }
 
-fn lerp_towards_target(
+fn move_towards_target(
     mut commands: Commands,
-    mut query: Query<(Entity, &mut Transform, &TargetPosition, &mut Countdown), With<Bomb>>,
+    mut query: Query<
+        (
+            Entity,
+            &mut Transform,
+            &TargetPosition,
+            &mut Countdown,
+            &BombToss,
+        ),
+        With<Bomb>,
+    >,
     time: Res<Time>,
 ) {
-    for (entity, mut trans, target_pos, mut countdown) in &mut query {
+    for (entity, mut trans, target_pos, mut countdown, bomb_toss) in &mut query {
         countdown.timer.tick(time.delta());
         if countdown.timer.just_finished() {
             commands.entity(entity).remove::<TargetPosition>();
         } else {
-            let new_pos = trans
-                .translation
-                .xy()
-                .lerp(target_pos.position, countdown.timer.fraction())
-                .extend(0.0);
-            trans.translation = new_pos;
+            let distance_frac =
+                trans.translation.xy().distance(target_pos.position) / SCREEN_HALF_WIDTH;
+            let mut new_pos = bomb_toss.ease.sample_clamped(countdown.timer.fraction());
+            let bounce =
+                bomb_toss.bounce.sample_clamped(countdown.timer.fraction()) * 100.0 * distance_frac;
+            new_pos.y += bounce;
+            trans.translation = new_pos.extend(0.0);
         }
     }
 }
