@@ -165,10 +165,11 @@ fn explode_exploding_bombs(
     assets: Res<VfxAssets>,
     sfx: Res<SfxAssets>,
     mut blast_writer: EventWriter<BlastEvent>,
-    mut query: Query<(Entity, &GlobalTransform), (With<Bomb>, With<Exploding>)>,
+    mut exploding_bomb_query: Query<(Entity, &GlobalTransform), (With<Bomb>, With<Exploding>)>,
     mut entropy: GlobalEntropy<WyRand>,
 ) {
-    for (entity, trans) in &mut query {
+    let count = exploding_bomb_query.iter().len();
+    for (entity, trans) in &mut exploding_bomb_query {
         explode_bomb(
             &mut commands,
             &assets,
@@ -177,6 +178,7 @@ fn explode_exploding_bombs(
             entity,
             &trans,
             &mut entropy,
+            count,
         );
     }
 }
@@ -189,6 +191,7 @@ fn explode_bomb(
     entity: Entity,
     transform: &GlobalTransform,
     entropy: &mut GlobalEntropy<WyRand>,
+    bomb_count: usize,
 ) {
     // destroy
     commands.entity(entity).despawn();
@@ -200,9 +203,9 @@ fn explode_bomb(
     ));
 
     if let Some(random_step) = sfx.bombs.choose(entropy.as_mut()) {
-        commands.spawn(sound_effect(random_step.clone(), 0.15));
-    } else {
-        warn!("no bomb sound :(");
+        if bomb_count < 5 {
+            commands.spawn(sound_effect(random_step.clone(), 0.15));
+        }
     }
 
     blast_writer.write(BlastEvent {
