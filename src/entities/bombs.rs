@@ -139,6 +139,7 @@ fn place_bomb_on_click(
             &assets,
             location,
             2.75,
+            // 0.5,
             500.0,
             player_query.translation(),
         ));
@@ -278,6 +279,7 @@ fn move_towards_target(
         countdown.timer.tick(time.delta());
         if countdown.timer.just_finished() {
             commands.entity(entity).remove::<TargetPosition>();
+            mark_bomb_for_explode(&mut commands, entity, 0.25);
         } else {
             let distance_frac =
                 trans.translation.xy().distance(target_pos.position) / SCREEN_HALF_WIDTH;
