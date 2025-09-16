@@ -62,7 +62,7 @@ pub fn create_player_character(assets: &CharacterAssets, health: i32) -> impl Bu
 fn check_if_player_dead(
     player: Option<Single<Entity, (With<Player>, With<Dead>)>>,
     mut next_menu: ResMut<NextState<Menu>>,
-    mut next_pause: ResMut<NextState<Pause>>
+    mut next_pause: ResMut<NextState<Pause>>,
 ) {
     if player.is_some() {
         // player is dead,
