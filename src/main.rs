@@ -26,6 +26,8 @@ mod spawners;
 mod theme;
 mod ui;
 mod vfx;
+mod waves;
+
 // dev specific
 #[cfg(feature = "dev")]
 mod dev_tools;
@@ -97,6 +99,7 @@ impl Plugin for AppPlugin {
             theme::plugin,
             ui::plugin,
             vfx::plugin,
+            waves::plugin,
         ));
         app.add_plugins((
             // dev specific
