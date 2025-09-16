@@ -65,7 +65,7 @@ pub struct Bomb {
 #[reflect(Component)]
 pub struct BombToss {
     pub ease: EasingCurve<Vec2>,
-    pub bounce: EasingCurve<f32>
+    pub bounce: EasingCurve<f32>,
 }
 
 #[derive(Component, Reflect)]
