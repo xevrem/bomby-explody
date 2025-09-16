@@ -30,6 +30,7 @@ fn spawn_loading_screen(mut commands: Commands) {
         children![widget::label("Loading...")],
     ));
 }
+
 fn start_asset_loading(mut next_state: ResMut<NextState<AssetsState>>) {
     info!("start loading gameplay assets");
     next_state.set(AssetsState::LoadGameplay);
