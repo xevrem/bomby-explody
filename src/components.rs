@@ -222,6 +222,13 @@ pub struct WasMoving;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Wave {
+    pub level: u32,
+    pub enemy_max: u32,
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct WillExplode {
     pub timer: Timer,
 }
