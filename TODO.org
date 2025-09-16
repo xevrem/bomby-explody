@@ -22,7 +22,6 @@ player blows them up, getting more points for chain reactions
 *** waves change types that spawn
 ** 1-2 additional mob types
 ** limited num bombs
-** gain more over time
+** gain more bombs over time
 ** when bugs hit base, with other bugs nearby, chain-asplode for moar dmg
 ** chain asplode does more damage!
-
