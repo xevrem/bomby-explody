@@ -12,6 +12,7 @@ pub(super) fn plugin(app: &mut App) {
 fn spawn_initial_wave(mut commands: Commands, mut next_state: ResMut<NextState<WaveState>>) {
     commands.spawn((
         Name::new("wave"),
+        StateScoped(Screen::Gameplay),
         Wave {
             level: 1,
             enemy_max: 5,
