@@ -3,7 +3,12 @@
 
 use bevy::prelude::*;
 
-use crate::{components::{Countdown, Wave}, screens::Screen, theme::prelude::*, waves::WaveState};
+use crate::{
+    components::{Countdown, Wave},
+    screens::Screen,
+    theme::prelude::*,
+    waves::WaveState,
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(WaveState::Announce), spawn_wave_screen)
@@ -38,10 +43,13 @@ fn wave_screen_fade(
     if query.0.timer.just_finished() {
         next_state.set(WaveState::Init);
     } else {
-        for mut text_color in child_query.iter_mut() {
-            let mut new_color = text_color.to_srgba();
-            new_color.alpha = query.0.timer.fraction_remaining();
-            text_color.0 = Color::Srgba(new_color);
+        // for mut text_color in child_query.iter_mut() {
+        for child in query.1.iter() {
+            if let Ok(mut text_color) = child_query.get_mut(child) {
+                let mut new_color = text_color.to_srgba();
+                new_color.alpha = query.0.timer.fraction_remaining();
+                text_color.0 = Color::Srgba(new_color);
+            }
         }
         query.0.timer.tick(time.delta());
     }
