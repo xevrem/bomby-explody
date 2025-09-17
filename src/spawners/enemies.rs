@@ -19,15 +19,17 @@ pub fn plugin(app: &mut App) {
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
     );
-    app.add_systems(OnEnter(Screen::Gameplay), create_enemy_spawner);
+    // app.add_systems(OnEnter(Screen::Gameplay), create_enemy_spawner);
 }
 
-pub fn create_enemy_spawner(mut commands: Commands) {
+pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: usize) {
     commands.spawn((
         Name::new("Enemy Spawner"),
         Enemy,
         Spawner {
-            max: 5,
+            limit,
+            max_at_once,
+            spawned: 0,
             timer: Timer::from_seconds(3.0, TimerMode::Repeating),
         },
         StateScoped(Screen::Gameplay),
@@ -43,7 +45,7 @@ fn tick_enemy_spawner(
     enemy_assets: Res<EnemyAssets>,
     mut entropy: GlobalEntropy<WyRand>,
 ) {
-    if enemy_query.iter().count() <= spawner.max {
+    if enemy_query.iter().count() <= spawner.max_at_once && spawner.spawned < spawner.limit {
         spawner.timer.tick(timer.delta());
 
         if spawner.timer.just_finished() {
@@ -64,6 +66,9 @@ fn tick_enemy_spawner(
                 ))
                 .id();
             commands.entity(level.entity()).add_child(spawned);
+
+            // updoot spawner count
+            spawner.spawned += 1;
         }
     }
 }

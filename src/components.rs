@@ -196,7 +196,9 @@ pub struct SoundEffect;
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Spawner {
-    pub max: usize,
+    pub limit: usize,
+    pub max_at_once: usize,
+    pub spawned: usize,
     pub timer: Timer,
 }
 
@@ -224,7 +226,8 @@ pub struct WasMoving;
 #[reflect(Component)]
 pub struct Wave {
     pub level: u32,
-    pub enemy_max: u32,
+    pub limit: usize,
+    pub max_at_once: usize,
 }
 
 #[derive(Component, Reflect)]
