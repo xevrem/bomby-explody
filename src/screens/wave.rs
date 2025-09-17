@@ -3,7 +3,7 @@
 
 use bevy::prelude::*;
 
-use crate::{components::Countdown, screens::Screen, theme::prelude::*, waves::WaveState};
+use crate::{components::{Countdown, Wave}, screens::Screen, theme::prelude::*, waves::WaveState};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(WaveState::Announce), spawn_wave_screen)
@@ -16,7 +16,8 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component)]
 struct WaveScreen;
 
-fn spawn_wave_screen(mut commands: Commands) {
+fn spawn_wave_screen(mut commands: Commands, wave_query: Single<&Wave>) {
+    let level = wave_query.level;
     commands.spawn((
         WaveScreen,
         widget::ui_root("Wave Screen"),
@@ -24,7 +25,7 @@ fn spawn_wave_screen(mut commands: Commands) {
         Countdown {
             timer: Timer::from_seconds(2.0, TimerMode::Once),
         },
-        children![widget::header("Wave")],
+        children![widget::header(format!("Wave {level}"))],
     ));
 }
 
