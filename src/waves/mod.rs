@@ -11,7 +11,7 @@ pub enum WaveState {
     #[default]
     None,
     Announce,
-    Initial,
+    Init,
     New,
     Running,
 }
