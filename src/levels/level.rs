@@ -4,17 +4,15 @@ use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_prng::WyRand;
 use bevy_rand::global::GlobalEntropy;
-use rand::prelude::*;
+// use rand::prelude::*;
 
 use crate::{
     audio::music,
     background::{create_background, BackgroundAssets},
     components::Level,
-    constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
-    entities::{
-        enemy::{create_enemy, EnemyAssets},
-        player::{create_player_character, CharacterAssets},
-    },
+    entities::
+        player::{create_player_character, CharacterAssets}
+    ,
     screens::Screen,
 };
 

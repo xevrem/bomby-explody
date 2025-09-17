@@ -53,7 +53,6 @@ pub fn create_enemy(
             texture_atlas: Some(TextureAtlas {
                 layout: enemy_assets.layout.clone(),
                 index,
-                ..default()
             }),
             custom_size: Some(Vec2::splat(30.0 * 3.0)),
             ..default()
@@ -224,10 +223,8 @@ fn move_to_player(
                 target: player.entity(),
                 amount: 1,
             });
-        } else {
-            if let Some(new_pos) = ease.0.sample(countdown.timer.fraction()) {
-                trans.translation = new_pos.extend(0.0);
-            }
+        } else if let Some(new_pos) = ease.0.sample(countdown.timer.fraction()) {
+            trans.translation = new_pos.extend(0.0);
         }
     }
 }

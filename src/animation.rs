@@ -1,6 +1,5 @@
-use crate::{assets::AssetsState, components::*, AppSystems, GameplaySystems, PausableSystems};
+use crate::{components::*, AppSystems, GameplaySystems, PausableSystems};
 use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(

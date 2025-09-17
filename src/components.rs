@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
+use crate::constants::SCREEN_WIDTH;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<AnimationConfig>()
@@ -143,7 +143,7 @@ impl MovementConfig {
     pub fn from_vec2(vec: Vec2) -> Self {
         let speed = vec.length();
         let direction = vec.normalize();
-        Self { direction, speed }
+        MovementConfig::new(direction, speed)// { direction, speed }
     }
 
     pub fn with_speed_as_screen_width_percent(mut self, value: f32) -> Self {
@@ -151,10 +151,10 @@ impl MovementConfig {
         self
     }
 
-    pub fn with_speed_as_screen_height_percent(mut self, value: f32) -> Self {
-        self.speed = SCREEN_HEIGHT * value;
-        self
-    }
+    // pub fn with_speed_as_screen_height_percent(mut self, value: f32) -> Self {
+    //     self.speed = SCREEN_HEIGHT * value;
+    //     self
+    // }
 }
 
 #[derive(Component, Reflect)]
@@ -200,11 +200,11 @@ pub struct Spawner {
     pub timer: Timer,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
-pub struct Speed {
-    pub value: f32,
-}
+// #[derive(Component, Reflect)]
+// #[reflect(Component)]
+// pub struct Speed {
+//     pub value: f32,
+// }
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]

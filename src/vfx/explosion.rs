@@ -25,7 +25,6 @@ pub fn create_explosion_vfx(assets: &VfxAssets, location: Vec2) -> impl Bundle {
             texture_atlas: Some(TextureAtlas {
                 index: 0,
                 layout: assets.explosion_layout.clone(),
-                ..default()
             }),
             custom_size: Some(Vec2::splat(96.0)),
             ..default()

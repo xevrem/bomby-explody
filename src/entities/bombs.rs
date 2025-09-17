@@ -2,7 +2,7 @@ use crate::{
     assets::AssetsState,
     audio::{sound_effect, SfxAssets},
     components::*,
-    constants::{SCREEN_HALF_WIDTH, SCREEN_WIDTH},
+    constants::SCREEN_HALF_WIDTH,
     events::BlastEvent,
     menus::Menu,
     screens::Screen,
@@ -47,9 +47,9 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(AssetCollection, Resource)]
 pub struct BombAssets {
-    #[asset(path = "images/vfx/Charge_Fire.png")]
-    #[asset(image(sampler(filter = nearest)))]
-    pub charge: Handle<Image>,
+    // #[asset(path = "images/vfx/Charge_Fire.png")]
+    // #[asset(image(sampler(filter = nearest)))]
+    // pub charge: Handle<Image>,
     #[asset(path = "images/vfx/Lavaball.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub ball: Handle<Image>,
@@ -90,7 +90,7 @@ pub fn create_bomb(
             texture_atlas: Some(TextureAtlas {
                 index: 0,
                 layout: assets.ball_layout.clone(),
-                ..default()
+                // ..default()
             }),
             custom_size: Some(Vec2::splat(64.0)),
             ..default()
@@ -121,8 +121,8 @@ fn add_click_to_spawn_observer(
 fn place_bomb_on_click(
     trigger: Trigger<Pointer<Click>>,
     mut commands: Commands,
-    screen_state: Res<State<Screen>>,
-    assets_state: Res<State<AssetsState>>,
+    // screen_state: Res<State<Screen>>,
+    // assets_state: Res<State<AssetsState>>,
     assets: Res<BombAssets>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
     player_query: Single<&GlobalTransform, With<Player>>,
@@ -183,7 +183,7 @@ fn explode_exploding_bombs(
             &sfx,
             &mut blast_writer,
             entity,
-            &trans,
+            trans,
             &mut entropy,
             count,
         );
@@ -205,14 +205,14 @@ fn explode_bomb(
 
     // make splosion
     commands.spawn(create_explosion_vfx(
-        &assets,
+        assets,
         transform.translation().truncate(),
     ));
 
-    if let Some(random_step) = sfx.bombs.choose(entropy.as_mut()) {
-        if bomb_count < 5 {
-            commands.spawn(sound_effect(random_step.clone(), 0.15));
-        }
+    if let Some(random_step) = sfx.bombs.choose(entropy.as_mut())
+        && bomb_count < 5
+    {
+        commands.spawn(sound_effect(random_step.clone(), 0.15));
     }
 
     blast_writer.write(BlastEvent {
@@ -230,7 +230,7 @@ fn chain_blast(
         (With<Bomb>, Without<Exploding>, Without<WillExplode>),
     >,
 ) {
-    if blast_reader.len() > 0 {
+    if !blast_reader.is_empty() {
         for blast in blast_reader.read() {
             for (bomb_ent, bomb_trans) in &mut bomb_query {
                 // skip if they're the same

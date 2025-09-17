@@ -12,6 +12,7 @@ use crate::screens::Screen;
 #[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 pub(super) enum DebugState {
     ON,
+    #[allow(clippy::upper_case_acronyms)]
     #[default]
     OFF,
 }

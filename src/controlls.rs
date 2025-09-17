@@ -1,7 +1,5 @@
-use crate::{assets::AssetsState, components::*, screens::Screen};
-use avian2d::parry::simba::scalar::SupersetOf;
-use bevy::{input::mouse::MouseButtonInput, prelude::*};
-use bevy_asset_loader::prelude::*;
+use crate::screens::Screen;
+use bevy::prelude::*;
 use bevy_enhanced_input::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

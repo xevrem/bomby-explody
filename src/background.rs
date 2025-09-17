@@ -50,7 +50,7 @@ pub fn create_background(
                         TILE_SIZE * x as f32,
                         TILE_SIZE * y as f32,
                         32 + val,
-                        &background_assets,
+                        background_assets,
                     ));
                 }
             }
