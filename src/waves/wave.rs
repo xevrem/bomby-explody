@@ -9,7 +9,7 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-fn spawn_initial_wave(mut commands: Commands) {
+fn spawn_initial_wave(mut commands: Commands, mut next_state: ResMut<NextState<WaveState>>) {
     commands.spawn((
         Name::new("wave"),
         Wave {
@@ -17,4 +17,6 @@ fn spawn_initial_wave(mut commands: Commands) {
             enemy_max: 5,
         },
     ));
+
+    next_state.set(WaveState::Announce);
 }
