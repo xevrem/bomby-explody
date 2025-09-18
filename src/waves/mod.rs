@@ -17,5 +17,5 @@ pub enum WaveState {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_state::<WaveState>().add_plugins((wave::plugin,));
+    app.init_state::<WaveState>().add_plugins(wave::plugin);
 }
