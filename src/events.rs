@@ -17,3 +17,7 @@ pub struct DamageEvent {
     pub target: Entity,
     pub amount: i32,
 }
+
+#[derive(Event)]
+pub struct EnemyDiedEvent;
+
