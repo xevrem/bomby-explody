@@ -34,6 +34,7 @@ pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: 
         Name::new("Enemy Spawner"),
         Enemy,
         Spawner {
+            all_spawned: false,
             limit,
             max_at_once,
             spawned: 0,
@@ -76,6 +77,10 @@ fn tick_enemy_spawner(
 
             // updoot spawner count
             spawner.spawned += 1;
+
+            if spawner.spawned == spawner.limit {
+                spawner.all_spawned = true;
+            }
         }
     }
 }
