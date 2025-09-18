@@ -66,5 +66,5 @@ fn setup_next_wave(mut wave: Single<&mut Wave>, mut next_state: ResMut<NextState
     wave.max_at_once += 1;
 
     // set next wave state
-    next_state.set(WaveState::Init);
+    next_state.set(WaveState::Announce);
 }
