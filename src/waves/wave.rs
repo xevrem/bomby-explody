@@ -12,14 +12,12 @@ use crate::{
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         OnEnter(Screen::Gameplay),
-        spawn_wave.run_if(in_state(WaveState::None)),
-    ).add_systems(
-        OnEnter(WaveState::Init),
-        spawn_initial_wave
-    );
+        spawn_wave_config.run_if(in_state(WaveState::None)),
+    )
+    .add_systems(OnEnter(WaveState::Init), spawn_wave)
 }
 
-fn spawn_wave(mut commands: Commands, mut next_state: ResMut<NextState<WaveState>>) {
+fn spawn_wave_config(mut commands: Commands, mut next_state: ResMut<NextState<WaveState>>) {
     commands.spawn((
         Name::new("wave"),
         StateScoped(Screen::Gameplay),
@@ -33,10 +31,10 @@ fn spawn_wave(mut commands: Commands, mut next_state: ResMut<NextState<WaveState
     next_state.set(WaveState::Announce);
 }
 
-
-fn spawn_initial_wave(mut commands: Commands,
+fn spawn_wave(
+    mut commands: Commands,
     wave: Single<&Wave>,
-    mut next_state: ResMut<NextState<WaveState>>
+    mut next_state: ResMut<NextState<WaveState>>,
 ) {
     create_enemy_spawner(&mut commands, wave.limit, wave.max_at_once);
 
