@@ -196,6 +196,7 @@ pub struct SoundEffect;
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Spawner {
+    pub all_spawned: bool,
     pub limit: usize,
     pub max_at_once: usize,
     pub spawned: usize,
