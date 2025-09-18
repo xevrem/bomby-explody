@@ -2,7 +2,10 @@ use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     // register events
-    app.add_event::<BlastEvent>().add_event::<DamageEvent>();
+    app.add_event::<BlastEvent>()
+        .add_event::<DamageEvent>()
+        .add_event::<EnemyDiedEvent>()
+        .add_event::<SpawningDoneEvent>();
 }
 
 #[derive(Event)]
@@ -20,7 +23,6 @@ pub struct DamageEvent {
 
 #[derive(Event)]
 pub struct EnemyDiedEvent;
-
 
 #[derive(Event)]
 pub struct SpawningDoneEvent;
