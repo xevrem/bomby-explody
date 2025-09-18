@@ -31,7 +31,7 @@ pub fn plugin(app: &mut App) {
     .add_systems(OnEnter(WaveState::Done), destroy_spawner);
 }
 
-pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: usize) {
+pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: usize, rate: f32) {
     commands.spawn((
         Name::new("Enemy Spawner"),
         Enemy,
@@ -40,7 +40,7 @@ pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: 
             limit,
             max_at_once,
             spawned: 0,
-            timer: Timer::from_seconds(3.0, TimerMode::Repeating),
+            timer: Timer::from_seconds(rate, TimerMode::Repeating),
         },
         StateScoped(Screen::Gameplay),
     ));
