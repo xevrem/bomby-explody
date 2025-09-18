@@ -4,10 +4,9 @@ use bevy_rand::global::GlobalEntropy;
 use rand::prelude::*;
 
 use crate::{
-    components::*,
+    components::{Done, Enemy, Level, Spawner},
     constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
-    events::{EnemyDiedEvent, SpawningDoneEvent},
     screens::Screen,
     waves::WaveState,
     AppSystems, GameplaySystems, PausableSystems,
@@ -18,13 +17,6 @@ pub fn plugin(app: &mut App) {
         Update,
         tick_enemy_spawner
             .in_set(AppSystems::TickTimers)
-            .in_set(PausableSystems)
-            .in_set(GameplaySystems),
-    )
-    .add_systems(
-        Update,
-        check_if_spawning_is_done
-            .in_set(AppSystems::Events)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
     )
@@ -48,62 +40,47 @@ pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: 
 
 fn tick_enemy_spawner(
     mut commands: Commands,
-    mut spawner: Single<&mut Spawner, With<Enemy>>,
+    spawner_query: Query<(&mut Spawner, Entity), (With<Enemy>, Without<Done>)>,
     level: Single<Entity, With<Level>>,
     enemy_query: Query<&Enemy>,
     timer: Res<Time>,
     enemy_assets: Res<EnemyAssets>,
     mut entropy: GlobalEntropy<WyRand>,
 ) {
-    if enemy_query.iter().count() <= spawner.max_at_once
-        && !spawner.all_spawned
-        && spawner.spawned < spawner.limit
-    {
-        spawner.timer.tick(timer.delta());
+    for (mut spawner, spawner_ent) in spawner_query {
+        if enemy_query.iter().count() <= spawner.max_at_once
+            && !spawner.all_spawned
+            && spawner.spawned < spawner.limit
+        {
+            spawner.timer.tick(timer.delta());
 
-        if spawner.timer.just_finished() {
-            let half_height: f32 = SCREEN_HEIGHT / 2.0 - 64.0;
-            let speed: f32 = entropy.random_range(0.05..0.1);
-            let y_position: f32 = entropy.random_range(-half_height..half_height);
-            let spawned = commands
-                .spawn(create_enemy(
-                    &enemy_assets,
-                    // starting asset index
-                    0,
-                    // center right side of screen
-                    Vec2::new(SCREEN_WIDTH / 2.0, y_position),
-                    // move direction
-                    Vec2::new(-1., 0.),
-                    // move speed
-                    speed,
-                ))
-                .id();
-            commands.entity(level.entity()).add_child(spawned);
+            if spawner.timer.just_finished() {
+                let half_height: f32 = SCREEN_HEIGHT / 2.0 - 64.0;
+                let speed: f32 = 0.3; //entropy.random_range(0.05..0.1);
+                let y_position: f32 = entropy.random_range(-half_height..half_height);
+                let spawned = commands
+                    .spawn(create_enemy(
+                        &enemy_assets,
+                        // starting asset index
+                        0,
+                        // center right side of screen
+                        Vec2::new(SCREEN_WIDTH / 2.0, y_position),
+                        // move direction
+                        Vec2::new(-1., 0.),
+                        // move speed
+                        speed,
+                    ))
+                    .id();
+                commands.entity(level.entity()).add_child(spawned);
 
-            // updoot spawner count
-            spawner.spawned += 1;
+                // updoot spawner count
+                spawner.spawned += 1;
 
-            if spawner.spawned == spawner.limit {
-                spawner.all_spawned = true;
+                if spawner.spawned == spawner.limit {
+                    spawner.all_spawned = true;
+                    commands.entity(spawner_ent).insert(Done);
+                }
             }
-        }
-    }
-}
-
-fn check_if_spawning_is_done(
-    spawn_query: Query<&Spawner, With<Enemy>>,
-    enemy_query: Query<&Enemy, Without<Dead>>,
-    mut event_reader: EventReader<EnemyDiedEvent>,
-    mut event_writer: EventWriter<SpawningDoneEvent>,
-) {
-    // we received a death event
-    for _event in event_reader.read() {
-        // if no enemies are left alive
-        // and all spawners have spawned all their entities
-        if enemy_query.iter().count() == 0 && spawn_query.iter().all(|s| s.all_spawned) {
-            // then say spawning is over
-            event_writer.write(SpawningDoneEvent);
-            info!("spawning done");
         }
     }
 }
