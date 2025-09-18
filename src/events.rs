@@ -21,3 +21,6 @@ pub struct DamageEvent {
 #[derive(Event)]
 pub struct EnemyDiedEvent;
 
+
+#[derive(Event)]
+pub struct SpawningDoneEvent;
