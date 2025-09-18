@@ -22,6 +22,7 @@ pub(super) fn plugin(app: &mut App) {
             .in_set(GameplaySystems)
             .in_set(PausableSystems),
     )
+    .add_systems(OnEnter(WaveState::Done), setup_next_wave);
 }
 
 fn spawn_wave_config(mut commands: Commands, mut next_state: ResMut<NextState<WaveState>>) {
@@ -56,4 +57,14 @@ fn handle_spawning_done(
         // wave is done
         next_state.set(WaveState::Done);
     }
+}
+
+fn setup_next_wave(mut wave: Single<&mut Wave>, mut next_state: ResMut<NextState<WaveState>>) {
+    // update wave config
+    wave.level += 1;
+    wave.limit += 1;
+    wave.max_at_once += 1;
+
+    // set next wave state
+    next_state.set(WaveState::Init);
 }
