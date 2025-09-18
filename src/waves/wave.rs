@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::Wave,
-    events::SpawningDoneEvent,
+    components::{Dead, Enemy, Health, Spawner, Wave},
+    events::EnemyDiedEvent,
     screens::Screen,
     spawners::enemies::create_enemy_spawner,
     waves::WaveState,
@@ -17,10 +17,12 @@ pub(super) fn plugin(app: &mut App) {
     .add_systems(OnEnter(WaveState::Init), spawn_wave)
     .add_systems(
         Update,
-        handle_spawning_done
+        handle_enemy_died
+            .run_if(in_state(WaveState::Running))
             .in_set(AppSystems::Events)
             .in_set(GameplaySystems)
-            .in_set(PausableSystems),
+            .in_set(PausableSystems)
+
     )
     .add_systems(OnEnter(WaveState::Done), setup_next_wave);
 }
@@ -49,17 +51,24 @@ fn spawn_wave(
     next_state.set(WaveState::Running);
 }
 
-fn handle_spawning_done(
-    mut event_reader: EventReader<SpawningDoneEvent>,
+fn handle_enemy_died(
+    spawn_query: Query<&Spawner, With<Enemy>>,
+    enemy_query: Query<&Enemy, (With<Health>, Without<Dead>)>,
+    mut event_reader: EventReader<EnemyDiedEvent>,
     mut next_state: ResMut<NextState<WaveState>>,
 ) {
-    // we received a spawning done event
+    // an enemy died
     for _event in event_reader.read() {
-        // wave is done
-        info!("wave is done");
-        next_state.set(WaveState::Done);
+        // if no enemies are left alive
+        // and all enemy spawners have spawned all their entities
+        if enemy_query.is_empty() && spawn_query.iter().all(|s| s.all_spawned) {
+            // then say spawning is over
+            info!("wave is done");
+            next_state.set(WaveState::Done);
+        }
     }
 }
+
 
 fn setup_next_wave(mut wave: Single<&mut Wave>, mut next_state: ResMut<NextState<WaveState>>) {
     // update wave config
