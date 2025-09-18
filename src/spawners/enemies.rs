@@ -7,6 +7,7 @@ use crate::{
     components::*,
     constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
+    events::{EnemyDiedEvent, SpawningDoneEvent},
     screens::Screen,
     AppSystems, GameplaySystems, PausableSystems,
 };
@@ -18,8 +19,14 @@ pub fn plugin(app: &mut App) {
             .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
-    );
-    // app.add_systems(OnEnter(Screen::Gameplay), create_enemy_spawner);
+    )
+    .add_systems(
+        Update,
+        handle_enemy_died
+            .in_set(AppSystems::Events)
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
+    )
 }
 
 pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: usize) {
@@ -70,5 +77,18 @@ fn tick_enemy_spawner(
             // updoot spawner count
             spawner.spawned += 1;
         }
+    }
+}
+
+fn handle_enemy_died(
+    spawn_query: Query<&Spawner, With<Enemy>>,
+    event_reader: EventReader<EnemyDiedEvent>,
+    mut event_writer: EventWriter<SpawningDoneEvent>,
+) {
+    // if we received an enemy death event
+    // and all spawners have spawned all their entities
+    if !event_reader.is_empty() && spawn_query.iter().all(|s| s.all_spawned) {
+        // then say spawning is over
+        event_writer.write(SpawningDoneEvent);
     }
 }
