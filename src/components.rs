@@ -4,16 +4,15 @@ use crate::constants::SCREEN_WIDTH;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<AnimationConfig>()
-        .register_type::<Music>()
         .register_type::<Bomb>()
         .register_type::<Explosion>()
         .register_type::<MovementConfig>()
-        .register_type::<SoundEffect>()
+        .register_type::<Spawner>()
+        .register_type::<Wave>()
         .register_type::<WillExplode>();
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub(super) struct Animating;
 
 #[derive(Component, Reflect)]
@@ -43,16 +42,14 @@ impl AnimationConfig {
         Timer::from_seconds(1.0 / self.fps as f32, TimerMode::Once)
     }
 }
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+
+#[derive(Component)]
 pub struct Attacking;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Background;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Blastable;
 
 #[derive(Component, Reflect)]
@@ -61,49 +58,43 @@ pub struct Bomb {
     pub timer: Timer,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct BombToss {
     pub ease: EasingCurve<Vec2>,
     pub bounce: EasingCurve<f32>,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Character;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Countdown {
     pub timer: Timer,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Damageable;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Damaged {
     pub timer: Timer,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Dead {
     pub timer: Timer,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
+pub struct Done;
+
+#[derive(Component)]
 pub struct EaseFunc<T>(pub EasingCurve<T>);
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Enemy;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Exploding;
 
 #[derive(Component, Reflect)]
@@ -112,18 +103,15 @@ pub struct Explosion {
     pub timer: Timer,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Health {
     pub current: i32,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct HealthLabel;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Level;
 
 #[derive(Component, Reflect)]
@@ -143,7 +131,7 @@ impl MovementConfig {
     pub fn from_vec2(vec: Vec2) -> Self {
         let speed = vec.length();
         let direction = vec.normalize();
-        MovementConfig::new(direction, speed)// { direction, speed }
+        MovementConfig::new(direction, speed) // { direction, speed }
     }
 
     pub fn with_speed_as_screen_width_percent(mut self, value: f32) -> Self {
@@ -157,40 +145,33 @@ impl MovementConfig {
     // }
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Moving;
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
 /// general "music" category (e.g. global background music, soundtrack).
 ///
 /// This can then be used to query for and operate on sounds in that category.
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Music;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct PlaceBombObserver;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Player;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct PlayerLabel;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct ScreenWrap;
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
 /// general "sound effect" category (e.g. footsteps, the sound of a magic spell, a door opening).
 ///
 /// This can then be used to query for and operate on sounds in that category.
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct SoundEffect;
 
 #[derive(Component, Reflect)]
@@ -209,18 +190,15 @@ pub struct Spawner {
 //     pub value: f32,
 // }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct TargetPosition {
     pub position: Vec2,
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct WasAttacking;
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct WasMoving;
 
 #[derive(Component, Reflect)]
