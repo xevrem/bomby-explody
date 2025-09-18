@@ -15,6 +15,13 @@ pub(super) fn plugin(app: &mut App) {
         spawn_wave_config.run_if(in_state(WaveState::None)),
     )
     .add_systems(OnEnter(WaveState::Init), spawn_wave)
+    .add_systems(
+        Update,
+        handle_spawning_done
+            .in_set(AppSystems::Events)
+            .in_set(GameplaySystems)
+            .in_set(PausableSystems),
+    )
 }
 
 fn spawn_wave_config(mut commands: Commands, mut next_state: ResMut<NextState<WaveState>>) {
@@ -39,4 +46,14 @@ fn spawn_wave(
     create_enemy_spawner(&mut commands, wave.limit, wave.max_at_once);
 
     next_state.set(WaveState::Running);
+}
+
+fn handle_spawning_done(
+    event_reader: EventReader<SpawningDoneEvent>,
+    mut next_state: ResMut<NextState<WaveState>>,
+) {
+    if !event_reader.is_empty() {
+        // wave is done
+        next_state.set(WaveState::Done);
+    }
 }

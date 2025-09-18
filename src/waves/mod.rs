@@ -12,8 +12,8 @@ pub enum WaveState {
     None,
     Announce,
     Init,
-    New,
     Running,
+    Done,
 }
 
 pub(super) fn plugin(app: &mut App) {
