@@ -50,11 +50,13 @@ fn spawn_wave(
 }
 
 fn handle_spawning_done(
-    event_reader: EventReader<SpawningDoneEvent>,
+    mut event_reader: EventReader<SpawningDoneEvent>,
     mut next_state: ResMut<NextState<WaveState>>,
 ) {
-    if !event_reader.is_empty() {
+    // we received a spawning done event
+    for _event in event_reader.read() {
         // wave is done
+        info!("wave is done");
         next_state.set(WaveState::Done);
     }
 }
@@ -65,6 +67,7 @@ fn setup_next_wave(mut wave: Single<&mut Wave>, mut next_state: ResMut<NextState
     wave.limit += 1;
     wave.max_at_once += 1;
 
+    info!("next wave setup, announcing...");
     // set next wave state
     next_state.set(WaveState::Announce);
 }

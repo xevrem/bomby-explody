@@ -23,12 +23,12 @@ pub fn plugin(app: &mut App) {
     )
     .add_systems(
         Update,
-        handle_enemy_died
+        check_if_spawning_is_done
             .in_set(AppSystems::Events)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
     )
-    .add_systems(OnEnter(WaveState::Done), destroy_spawner);
+    .add_systems(OnEnter(WaveState::Done), despawn_spawner);
 }
 
 pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: usize, rate: f32) {
@@ -55,7 +55,10 @@ fn tick_enemy_spawner(
     enemy_assets: Res<EnemyAssets>,
     mut entropy: GlobalEntropy<WyRand>,
 ) {
-    if enemy_query.iter().count() <= spawner.max_at_once && spawner.spawned < spawner.limit {
+    if enemy_query.iter().count() <= spawner.max_at_once
+        && !spawner.all_spawned
+        && spawner.spawned < spawner.limit
+    {
         spawner.timer.tick(timer.delta());
 
         if spawner.timer.just_finished() {
@@ -87,24 +90,30 @@ fn tick_enemy_spawner(
     }
 }
 
-fn handle_enemy_died(
+fn check_if_spawning_is_done(
     spawn_query: Query<&Spawner, With<Enemy>>,
-    event_reader: EventReader<EnemyDiedEvent>,
+    enemy_query: Query<&Enemy, Without<Dead>>,
+    mut event_reader: EventReader<EnemyDiedEvent>,
     mut event_writer: EventWriter<SpawningDoneEvent>,
 ) {
-    // if we received an enemy death event
-    // and all spawners have spawned all their entities
-    if !event_reader.is_empty() && spawn_query.iter().all(|s| s.all_spawned) {
-        // then say spawning is over
-        event_writer.write(SpawningDoneEvent);
+    // we received a death event
+    for _event in event_reader.read() {
+        // if no enemies are left alive
+        // and all spawners have spawned all their entities
+        if enemy_query.iter().count() == 0 && spawn_query.iter().all(|s| s.all_spawned) {
+            // then say spawning is over
+            event_writer.write(SpawningDoneEvent);
+            info!("spawning done");
+        }
     }
 }
 
-fn destroy_spawner(
+fn despawn_spawner(
     mut commands: Commands,
     spawn_query: Query<Entity, (With<Spawner>, With<Enemy>)>,
 ) {
     for spawner in spawn_query {
         commands.entity(spawner).despawn();
+        info!("spawner despawned");
     }
 }
