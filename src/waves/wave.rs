@@ -44,7 +44,7 @@ fn spawn_wave(
     wave: Single<&Wave>,
     mut next_state: ResMut<NextState<WaveState>>,
 ) {
-    create_enemy_spawner(&mut commands, wave.limit, wave.max_at_once);
+    create_enemy_spawner(&mut commands, wave.limit, wave.max_at_once, 1.0);
 
     next_state.set(WaveState::Running);
 }
