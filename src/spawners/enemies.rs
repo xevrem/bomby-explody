@@ -9,6 +9,7 @@ use crate::{
     entities::enemy::{create_enemy, EnemyAssets},
     events::{EnemyDiedEvent, SpawningDoneEvent},
     screens::Screen,
+    waves::WaveState,
     AppSystems, GameplaySystems, PausableSystems,
 };
 
@@ -27,6 +28,7 @@ pub fn plugin(app: &mut App) {
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
     )
+    .add_systems(OnEnter(WaveState::Done), destroy_spawner);
 }
 
 pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: usize) {
@@ -95,5 +97,14 @@ fn handle_enemy_died(
     if !event_reader.is_empty() && spawn_query.iter().all(|s| s.all_spawned) {
         // then say spawning is over
         event_writer.write(SpawningDoneEvent);
+    }
+}
+
+fn destroy_spawner(
+    mut commands: Commands,
+    spawn_query: Query<Entity, (With<Spawner>, With<Enemy>)>,
+) {
+    for spawner in spawn_query {
+        commands.entity(spawner).despawn();
     }
 }
