@@ -41,7 +41,8 @@ pub fn spawn_level(
             Visibility::default(),
             StateScoped(Screen::Gameplay),
             children![
-                create_player_character(&character_assets, 10),
+                // FIXME: this is dev hp
+                create_player_character(&character_assets, 1000),
                 (
                     Name::new("Gameplay Music"),
                     music(level_assets.music.clone())
