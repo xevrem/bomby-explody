@@ -103,6 +103,9 @@ pub struct Explosion {
     pub timer: Timer,
 }
 
+#[derive(Component, Clone)]
+pub struct Flying;
+
 #[derive(Component)]
 pub struct Health {
     pub current: i32,
