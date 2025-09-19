@@ -206,6 +206,7 @@ pub struct WasMoving;
 pub struct Wave {
     pub level: u32,
     pub limit: usize,
+    pub limit_growth: usize,
     pub max_at_once: usize,
 }
 
