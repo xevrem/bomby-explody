@@ -28,7 +28,7 @@ fn spawn_wave_screen(mut commands: Commands, wave_query: Single<&Wave>) {
         widget::ui_root("Wave Screen"),
         StateScoped(WaveState::Announce),
         Countdown {
-            timer: Timer::from_seconds(2.0, TimerMode::Once),
+            timer: Timer::from_seconds(3.0, TimerMode::Once),
         },
         children![widget::header(format!("Wave {level}"))],
     ));
@@ -47,7 +47,12 @@ fn wave_screen_fade(
         for child in query.1.iter() {
             if let Ok(mut text_color) = child_query.get_mut(child) {
                 let mut new_color = text_color.to_srgba();
-                new_color.alpha = query.0.timer.fraction_remaining();
+                let fraction = query.0.timer.fraction();
+                if fraction < 0.5 {
+                    new_color.alpha = fraction / 0.5;
+                } else {
+                    new_color.alpha = (1.0 - fraction) / 0.5;
+                }
                 text_color.0 = Color::Srgba(new_color);
             }
         }
