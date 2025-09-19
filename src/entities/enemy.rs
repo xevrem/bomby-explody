@@ -1,5 +1,8 @@
 use crate::{
-    assets::AssetsState, components::*, constants::SCREEN_HALF_HEIGHT, events::{DamageEvent, EnemyDiedEvent},
+    assets::AssetsState,
+    components::*,
+    constants::SCREEN_HALF_HEIGHT,
+    events::{DamageEvent, EnemyDiedEvent},
     AppSystems, GameplaySystems, PausableSystems,
 };
 use bevy::prelude::*;
