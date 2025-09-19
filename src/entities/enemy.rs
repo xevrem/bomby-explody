@@ -148,7 +148,7 @@ fn handle_dead(
         dead.timer.tick(time.delta());
 
         let frac = dead.timer.fraction_remaining();
-        sprite.color = Color::srgba(1.0, 1.0, 1.0, frac);
+        sprite.color = Color::srgba(1.0, frac, frac, frac);
 
         if dead.timer.just_finished() {
             commands.entity(entity).despawn();
