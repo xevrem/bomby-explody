@@ -21,8 +21,7 @@ pub(super) fn plugin(app: &mut App) {
             .run_if(in_state(WaveState::Running))
             .in_set(AppSystems::Events)
             .in_set(GameplaySystems)
-            .in_set(PausableSystems)
-
+            .in_set(PausableSystems),
     )
     .add_systems(OnEnter(WaveState::Done), setup_next_wave);
 }
@@ -34,6 +33,7 @@ fn spawn_wave_config(mut commands: Commands, mut next_state: ResMut<NextState<Wa
         Wave {
             level: 1,
             limit: 5,
+            limit_growth: 2,
             max_at_once: 2,
         },
     ));
@@ -69,12 +69,15 @@ fn handle_enemy_died(
     }
 }
 
-
 fn setup_next_wave(mut wave: Single<&mut Wave>, mut next_state: ResMut<NextState<WaveState>>) {
     // update wave config
     wave.level += 1;
-    wave.limit += 1;
-    wave.max_at_once += 1;
+
+    if wave.max_at_once < (wave.limit / 3) {
+        wave.max_at_once += 1;
+    } else {
+        wave.limit += wave.limit_growth;
+    }
 
     info!("next wave setup, announcing...");
     // set next wave state
