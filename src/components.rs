@@ -189,6 +189,8 @@ pub struct Spawner {
 // pub struct Speed {
 //     pub value: f32,
 // }
+#[derive(Component)]
+pub struct SubType<T>(pub T) where T: Component + Clone;
 
 #[derive(Component)]
 pub struct TargetPosition {
