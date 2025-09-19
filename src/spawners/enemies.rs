@@ -4,7 +4,7 @@ use bevy_rand::global::GlobalEntropy;
 use rand::prelude::*;
 
 use crate::{
-    components::{Done, Enemy, Level, Spawner},
+    components::{Done, Enemy, Flying, Level, Spawner, SubType},
     constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
     screens::Screen,
@@ -15,7 +15,7 @@ use crate::{
 pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        tick_enemy_spawner
+        tick_enemy_spawner::<Flying>
             .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
@@ -23,7 +23,15 @@ pub fn plugin(app: &mut App) {
     .add_systems(OnEnter(WaveState::Done), despawn_spawner);
 }
 
-pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: usize, rate: f32) {
+pub fn create_enemy_spawner<T>(
+    commands: &mut Commands,
+    sub_type: T,
+    limit: usize,
+    max_at_once: usize,
+    rate: f32,
+) where
+    T: Component + Clone,
+{
     commands.spawn((
         Name::new("Enemy Spawner"),
         Enemy,
@@ -34,20 +42,23 @@ pub fn create_enemy_spawner(commands: &mut Commands, limit: usize, max_at_once: 
             spawned: 0,
             timer: Timer::from_seconds(rate, TimerMode::Repeating),
         },
+        SubType::<T>(sub_type),
         StateScoped(Screen::Gameplay),
     ));
 }
 
-fn tick_enemy_spawner(
+fn tick_enemy_spawner<T>(
     mut commands: Commands,
-    spawner_query: Query<(&mut Spawner, Entity), (With<Enemy>, Without<Done>)>,
+    spawner_query: Query<(&mut Spawner, &SubType<T>, Entity), (With<Enemy>, Without<Done>)>,
     level: Single<Entity, With<Level>>,
     enemy_query: Query<&Enemy>,
     timer: Res<Time>,
     enemy_assets: Res<EnemyAssets>,
     mut entropy: GlobalEntropy<WyRand>,
-) {
-    for (mut spawner, spawner_ent) in spawner_query {
+) where
+    T: Component + Clone,
+{
+    for (mut spawner, sub_type, spawner_ent) in spawner_query {
         if enemy_query.iter().count() <= spawner.max_at_once
             && !spawner.all_spawned
             && spawner.spawned < spawner.limit
@@ -60,6 +71,7 @@ fn tick_enemy_spawner(
                 let y_position: f32 = entropy.random_range(-half_height..half_height);
                 let spawned = commands
                     .spawn(create_enemy(
+                        sub_type.0.clone(),
                         &enemy_assets,
                         // starting asset index
                         0,
