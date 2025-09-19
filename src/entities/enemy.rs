@@ -35,6 +35,7 @@ pub struct EnemyAssets {
     layout: Handle<TextureAtlasLayout>,
 }
 pub fn create_enemy(
+    enemy_type: impl Component,
     enemy_assets: &EnemyAssets,
     index: usize,
     position: Vec2,
@@ -48,6 +49,7 @@ pub fn create_enemy(
         Blastable,
         Damageable,
         Enemy,
+        enemy_type,
         Health { current: 1 },
         MovementConfig::from_vec2(movement).with_speed_as_screen_width_percent(speed_percent),
         Moving,
