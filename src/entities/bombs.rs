@@ -121,20 +121,14 @@ fn add_click_to_spawn_observer(
 fn place_bomb_on_click(
     trigger: Trigger<Pointer<Click>>,
     mut commands: Commands,
-    // screen_state: Res<State<Screen>>,
-    // assets_state: Res<State<AssetsState>>,
     assets: Res<BombAssets>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
     player_query: Single<&GlobalTransform, With<Player>>,
 ) {
-    // if screen_state.get() == &Screen::Gameplay && assets_state.get() == &AssetsState::GameplayReady
-    // {
-    // info!("clicky {}", trigger.pointer_location.position);
     let (camera, camera_trans) = *camera_query;
     if let Ok(location) =
         camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
     {
-        // let location = trigger.pointer_location.position;
         commands.spawn(create_bomb(
             &assets,
             location,
