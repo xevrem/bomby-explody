@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::{Dead, Enemy, Flying, Health, Spawner, Wave},
+    components::{AssetIdx, Dead, Enemy, Flying, Ground, Health, Spawner, Wave},
     events::EnemyDiedEvent,
     screens::Screen,
     spawners::enemies::create_enemy_spawner,
@@ -46,7 +46,22 @@ fn spawn_wave(
     wave: Single<&Wave>,
     mut next_state: ResMut<NextState<WaveState>>,
 ) {
-    create_enemy_spawner(&mut commands, Flying, wave.limit, wave.max_at_once, 1.0);
+    create_enemy_spawner(
+        &mut commands,
+        Flying,
+        AssetIdx(0),
+        wave.limit,
+        wave.max_at_once,
+        1.0,
+    );
+    create_enemy_spawner(
+        &mut commands,
+        Ground,
+        AssetIdx(14 * 4),
+        wave.limit,
+        wave.max_at_once,
+        1.0,
+    );
 
     next_state.set(WaveState::Running);
 }

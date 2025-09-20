@@ -1,10 +1,10 @@
-use bevy::prelude::*;
+use bevy::{asset::AssetIndex, prelude::*};
 use bevy_prng::WyRand;
 use bevy_rand::global::GlobalEntropy;
 use rand::prelude::*;
 
 use crate::{
-    components::{Done, Enemy, Flying, Level, Spawner, SubType},
+    components::{AssetIdx, Done, Enemy, Flying, Ground, Level, Spawner, SubType},
     constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
     screens::Screen,
@@ -15,7 +15,7 @@ use crate::{
 pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        tick_enemy_spawner::<Flying>
+        (tick_enemy_spawner::<Flying>, tick_enemy_spawner::<Ground>)
             .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
@@ -26,6 +26,7 @@ pub fn plugin(app: &mut App) {
 pub fn create_enemy_spawner<T>(
     commands: &mut Commands,
     sub_type: T,
+    asset_index: AssetIdx,
     limit: usize,
     max_at_once: usize,
     rate: f32,
@@ -34,6 +35,7 @@ pub fn create_enemy_spawner<T>(
 {
     commands.spawn((
         Name::new("Enemy Spawner"),
+        asset_index,
         Enemy,
         Spawner {
             all_spawned: false,
@@ -49,7 +51,10 @@ pub fn create_enemy_spawner<T>(
 
 fn tick_enemy_spawner<T>(
     mut commands: Commands,
-    spawner_query: Query<(&mut Spawner, &SubType<T>, Entity), (With<Enemy>, Without<Done>)>,
+    spawner_query: Query<
+        (&mut Spawner, &SubType<T>, &AssetIdx, Entity),
+        (With<Enemy>, Without<Done>),
+    >,
     level: Single<Entity, With<Level>>,
     enemy_query: Query<&Enemy>,
     timer: Res<Time>,
@@ -58,7 +63,7 @@ fn tick_enemy_spawner<T>(
 ) where
     T: Component + Clone,
 {
-    for (mut spawner, sub_type, spawner_ent) in spawner_query {
+    for (mut spawner, sub_type, asset_index, spawner_ent) in spawner_query {
         if enemy_query.iter().count() <= spawner.max_at_once
             && !spawner.all_spawned
             && spawner.spawned < spawner.limit
@@ -74,7 +79,7 @@ fn tick_enemy_spawner<T>(
                         sub_type.0.clone(),
                         &enemy_assets,
                         // starting asset index
-                        0,
+                        asset_index.0,
                         // center right side of screen
                         Vec2::new(SCREEN_WIDTH / 2.0, y_position),
                         // move direction
