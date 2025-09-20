@@ -4,7 +4,7 @@ use bevy_rand::global::GlobalEntropy;
 use rand::prelude::*;
 
 use crate::{
-    components::{AssetIdx, Done, Enemy, Flying, Ground, Level, Spawner, SubType},
+    components::{AssetIdx, Done, Enemy, Flying, Ground, Health, Level, Spawner, SubType},
     constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
     screens::Screen,
@@ -56,7 +56,7 @@ fn tick_enemy_spawner<T>(
         (With<Enemy>, Without<Done>),
     >,
     level: Single<Entity, With<Level>>,
-    enemy_query: Query<&Enemy>,
+    enemy_query: Query<&Enemy, (With<T>, With<Health>)>,
     timer: Res<Time>,
     enemy_assets: Res<EnemyAssets>,
     mut entropy: GlobalEntropy<WyRand>,
@@ -72,7 +72,8 @@ fn tick_enemy_spawner<T>(
 
             if spawner.timer.just_finished() {
                 let half_height: f32 = SCREEN_HEIGHT / 2.0 - 64.0;
-                let speed: f32 = 0.3; //entropy.random_range(0.05..0.1);
+                // let speed: f32 = entropy.random_range(0.05..0.1);
+                let speed: f32 = entropy.random_range(0.15..0.5);
                 let y_position: f32 = entropy.random_range(-half_height..half_height);
                 let spawned = commands
                     .spawn(create_enemy(
