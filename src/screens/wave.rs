@@ -26,6 +26,7 @@ fn spawn_wave_screen(mut commands: Commands, wave_query: Single<&Wave>) {
     commands.spawn((
         WaveScreen,
         widget::ui_root("Wave Screen"),
+        StateScoped(Screen::Gameplay),
         StateScoped(WaveState::Announce),
         Countdown {
             timer: Timer::from_seconds(3.0, TimerMode::Once),
