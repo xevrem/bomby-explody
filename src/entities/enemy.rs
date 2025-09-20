@@ -157,7 +157,8 @@ fn handle_dead(
 
         if dead.timer.just_finished() {
             commands.entity(entity).despawn();
-            dead_writer.write(EnemyDiedEvent);
+            // dead_writer.write(EnemyDiedEvent);
+            commands.trigger(EnemyDiedEvent)
         }
     }
 }
