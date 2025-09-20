@@ -44,6 +44,9 @@ impl AnimationConfig {
 }
 
 #[derive(Component)]
+pub struct AssetIdx(pub usize);
+
+#[derive(Component)]
 pub struct Attacking;
 
 #[derive(Component)]
