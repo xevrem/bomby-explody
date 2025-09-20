@@ -7,7 +7,7 @@ use crate::{
     // asset_tracking::ResourceHandles,
     menus::Menu,
     screens::Screen,
-    theme::widget,
+    theme::widget, waves::WaveState,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -48,12 +48,15 @@ fn enter_loading_or_gameplay_screen(
     _: Trigger<Pointer<Click>>,
     assets_state: Res<State<AssetsState>>,
     mut next_screen: ResMut<NextState<Screen>>,
+    mut next_wave: ResMut<NextState<WaveState>>,
 ) {
     if assets_state.get() == &AssetsState::GameplayReady {
         next_screen.set(Screen::Gameplay);
     } else {
         next_screen.set(Screen::Loading);
     }
+
+    next_wave.set(WaveState::None);
 }
 
 fn open_settings_menu(_: Trigger<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
