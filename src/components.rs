@@ -109,6 +109,9 @@ pub struct Explosion {
 #[derive(Component, Clone)]
 pub struct Flying;
 
+#[derive(Component, Clone)]
+pub struct Ground;
+
 #[derive(Component)]
 pub struct Health {
     pub current: i32,
