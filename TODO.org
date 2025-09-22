@@ -9,19 +9,23 @@ player blows them up, getting more points for chain reactions
 
 ** bugs attacking base
 *** hit base, damage base
-*** spawned randomly opposite side to base
-** bombs fired by user to blow up bugs
-*** bombs stun bugs
+*** COMPLETE spawned randomly opposite side to base
+CLOSED: [2025-09-21 Sun 21:06]
+** DOING bombs fired by user to blow up bugs
+*** COMPLETE bombs stun bugs
+CLOSED: [2025-09-21 Sun 21:07]
 *** bombs can chain for more damage
 ** Survive as long as possible
 
 * Polish Features
 ** more balanced dmg and health
-** waves of enemies
-*** waves change number of spawns
-*** waves change types that spawn
-** 1-2 additional mob types
+** DOING waves of enemies
+*** COMPLETE waves change number of spawns
+CLOSED: [2025-09-21 Sun 21:07]
+*** COMPLETE waves change types that spawn
+CLOSED: [2025-09-21 Sun 21:07]
+** DOING 1-2 additional mob types
 ** limited num bombs
 ** gain more bombs over time
 ** when bugs hit base, with other bugs nearby, chain-asplode for moar dmg
-** chain asplode does more damage!
+*** chain asplode does more damage!
