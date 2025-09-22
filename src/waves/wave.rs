@@ -15,14 +15,7 @@ pub(super) fn plugin(app: &mut App) {
         spawn_wave_config.run_if(in_state(WaveState::None)),
     )
     .add_systems(OnEnter(WaveState::Init), spawn_wave)
-    .add_systems(
-        Update,
-        handle_enemy_died
-            .run_if(in_state(WaveState::Running))
-            .in_set(AppSystems::Events)
-            .in_set(GameplaySystems)
-            .in_set(PausableSystems),
-    )
+    .add_systems(OnEnter(WaveState::Running), create_enemy_died_observer)
     .add_systems(OnEnter(WaveState::Done), setup_next_wave);
 }
 
@@ -81,6 +74,35 @@ fn handle_enemy_died(
             info!("wave is done");
             next_state.set(WaveState::Done);
         }
+    }
+}
+
+fn create_enemy_died_observer(mut commands: Commands) {
+    commands.spawn((
+        // auto destroy observer:
+        //   if we open a menu
+        //   or leave the gameplay screen
+        StateScoped(Screen::Gameplay),
+        StateScoped(WaveState::Running),
+        Observer::new(observe_enemy_died),
+        // PlaceBombObserver,
+    ));
+}
+
+fn observe_enemy_died(
+    trigger: Trigger<EnemyDiedEvent>,
+    spawn_query: Query<&Spawner, With<Enemy>>,
+    enemy_query: Query<&Enemy, (With<Health>, Without<Dead>)>,
+    mut next_state: ResMut<NextState<WaveState>>,
+) {
+    // an enemy died
+
+    // if no enemies are left alive
+    // and all enemy spawners have spawned all their entities
+    if enemy_query.is_empty() && spawn_query.iter().all(|s| s.all_spawned) {
+        // then say spawning is over
+        info!("wave is done");
+        next_state.set(WaveState::Done);
     }
 }
 
