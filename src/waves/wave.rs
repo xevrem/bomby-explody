@@ -39,6 +39,7 @@ fn spawn_wave(
     wave: Single<&Wave>,
     mut next_state: ResMut<NextState<WaveState>>,
 ) {
+    // always create flying enemy
     create_enemy_spawner(
         &mut commands,
         Flying,
@@ -47,14 +48,17 @@ fn spawn_wave(
         wave.max_at_once,
         1.0,
     );
-    create_enemy_spawner(
-        &mut commands,
-        Ground,
-        AssetIdx(14 * 4),
-        wave.limit,
-        wave.max_at_once,
-        1.0,
-    );
+
+    if wave.level > 1 {
+        create_enemy_spawner(
+            &mut commands,
+            Ground,
+            AssetIdx(14 * 4),
+            wave.limit / 2,
+            wave.max_at_once / 2,
+            1.0,
+        );
+    }
 
     next_state.set(WaveState::Running);
 }
