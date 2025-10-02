@@ -201,6 +201,9 @@ pub struct Speed(pub f32);
 pub struct SubType<T>(pub T) where T: Component + Clone;
 
 #[derive(Component)]
+pub struct TargetDistance(pub f32);
+
+#[derive(Component)]
 pub struct TargetPosition {
     pub position: Vec2,
 }
