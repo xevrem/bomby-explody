@@ -193,11 +193,10 @@ pub struct Spawner {
     pub timer: Timer,
 }
 
-// #[derive(Component, Reflect)]
-// #[reflect(Component)]
-// pub struct Speed {
-//     pub value: f32,
-// }
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Speed(pub f32);
+
 #[derive(Component)]
 pub struct SubType<T>(pub T) where T: Component + Clone;
 
