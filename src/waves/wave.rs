@@ -47,6 +47,7 @@ fn spawn_wave(
         wave.limit,
         wave.max_at_once,
         1.0,
+        0.3
     );
 
     if wave.level > 1 {
@@ -57,6 +58,7 @@ fn spawn_wave(
             wave.limit / 2,
             wave.max_at_once / 2,
             1.0,
+            0.15
         );
     }
 

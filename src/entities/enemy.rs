@@ -41,6 +41,7 @@ pub fn create_enemy(
     position: Vec2,
     movement: Vec2,
     speed_percent: f32,
+    target_distance: f32,
 ) -> impl Bundle {
     (
         Name::new("Enemy"),
@@ -62,6 +63,7 @@ pub fn create_enemy(
             custom_size: Some(Vec2::splat(30.0 * 3.0)),
             ..default()
         },
+        TargetDistance(target_distance),
         // ScreenWrap,
         Transform::from_translation(position.extend(0.0)),
     )
@@ -166,7 +168,7 @@ fn handle_dead(
 fn switch_to_attack_player(
     mut commands: Commands,
     enemy_query: Query<
-        (Entity, &GlobalTransform),
+        (Entity, &GlobalTransform, &TargetDistance),
         (
             With<Enemy>,
             Without<Player>,
@@ -177,10 +179,11 @@ fn switch_to_attack_player(
     player: Single<&GlobalTransform, (With<Player>, Without<Enemy>)>,
 ) {
     let player_position = player.translation().xy();
-    for (enemy, enemy_trans) in enemy_query {
+    for (enemy, enemy_trans, target_dist) in enemy_query {
         let enemy_position = enemy_trans.translation().xy();
         let distance = enemy_position.distance(player_position);
-        if distance <= SCREEN_HALF_HEIGHT {
+        // if distance <= SCREEN_HALF_HEIGHT {
+        if distance <= target_dist.0 {
             let time_to_attack = (distance / 200.0) / 2.0;
 
             commands

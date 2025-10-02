@@ -4,8 +4,8 @@ use bevy_rand::global::GlobalEntropy;
 use rand::prelude::*;
 
 use crate::{
-    components::{AssetIdx, Done, Enemy, Flying, Ground, Health, Level, Spawner, SubType},
-    constants::{SCREEN_HEIGHT, SCREEN_WIDTH},
+    components::{AssetIdx, Done, Enemy, Flying, Ground, Health, Level, Spawner, Speed, SubType},
+    constants::{SCREEN_HALF_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
     screens::Screen,
     waves::WaveState,
@@ -30,6 +30,7 @@ pub fn create_enemy_spawner<T>(
     limit: usize,
     max_at_once: usize,
     rate: f32,
+    max_speed: f32,
 ) where
     T: Component + Clone,
 {
@@ -44,6 +45,7 @@ pub fn create_enemy_spawner<T>(
             spawned: 0,
             timer: Timer::from_seconds(rate, TimerMode::Repeating),
         },
+        Speed(max_speed),
         SubType::<T>(sub_type),
         StateScoped(Screen::Gameplay),
     ));
@@ -52,7 +54,7 @@ pub fn create_enemy_spawner<T>(
 fn tick_enemy_spawner<T>(
     mut commands: Commands,
     spawner_query: Query<
-        (&mut Spawner, &SubType<T>, &AssetIdx, Entity),
+        (&mut Spawner, &SubType<T>, &AssetIdx, &Speed, Entity),
         (With<Enemy>, Without<Done>),
     >,
     level: Single<Entity, With<Level>>,
@@ -63,7 +65,7 @@ fn tick_enemy_spawner<T>(
 ) where
     T: Component + Clone,
 {
-    for (mut spawner, sub_type, asset_index, spawner_ent) in spawner_query {
+    for (mut spawner, sub_type, asset_index, max_speed, spawner_ent) in spawner_query {
         if enemy_query.iter().count() <= spawner.max_at_once
             && !spawner.all_spawned
             && spawner.spawned < spawner.limit
@@ -73,7 +75,9 @@ fn tick_enemy_spawner<T>(
             if spawner.timer.just_finished() {
                 let half_height: f32 = SCREEN_HEIGHT / 2.0 - 64.0;
                 // let speed: f32 = entropy.random_range(0.05..0.1);
-                let speed: f32 = entropy.random_range(0.15..0.5);
+                let speed: f32 = entropy.random_range(0.05..max_speed.0);
+                let target_distance =
+                    entropy.random_range(SCREEN_HALF_HEIGHT - 100.0..SCREEN_HALF_HEIGHT + 100.0);
                 let y_position: f32 = entropy.random_range(-half_height..half_height);
                 let spawned = commands
                     .spawn(create_enemy(
@@ -87,6 +91,8 @@ fn tick_enemy_spawner<T>(
                         Vec2::new(-1., 0.),
                         // move speed
                         speed,
+                        // rough target engage distance
+                        target_distance,
                     ))
                     .id();
                 commands.entity(level.entity()).add_child(spawned);
