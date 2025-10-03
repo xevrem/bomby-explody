@@ -168,7 +168,13 @@ fn handle_dead(
 fn switch_to_attack_player(
     mut commands: Commands,
     enemy_query: Query<
-        (Entity, &GlobalTransform, &TargetDistance),
+        (
+            Entity,
+            &GlobalTransform,
+            &TargetDistance,
+            Option<&Flying>,
+            Option<&Ground>,
+        ),
         (
             With<Enemy>,
             Without<Player>,
@@ -179,39 +185,59 @@ fn switch_to_attack_player(
     player: Single<&GlobalTransform, (With<Player>, Without<Enemy>)>,
 ) {
     let player_position = player.translation().xy();
-    for (enemy, enemy_trans, target_dist) in enemy_query {
+    for (enemy, enemy_trans, target_dist, maybe_flying, maybe_ground) in enemy_query {
         let enemy_position = enemy_trans.translation().xy();
         let distance = enemy_position.distance(player_position);
         // if distance <= SCREEN_HALF_HEIGHT {
         if distance <= target_dist.0 {
             let time_to_attack = (distance / 200.0) / 2.0;
 
-            commands
-                .entity(enemy)
-                .insert((
-                    Attacking,
-                    Countdown {
-                        timer: Timer::from_seconds(time_to_attack, TimerMode::Once),
-                    },
-                    TargetPosition {
-                        position: player_position,
-                    },
-                    EaseFunc(EasingCurve::new(
-                        enemy_position,
-                        player_position,
-                        EaseFunction::BackIn,
-                    )),
-                ))
-                .remove::<Moving>();
+            if maybe_flying.is_some() {
+                commands
+                    .entity(enemy)
+                    .insert((
+                        Attacking,
+                        Countdown {
+                            timer: Timer::from_seconds(time_to_attack, TimerMode::Once),
+                        },
+                        TargetPosition {
+                            position: player_position,
+                        },
+                        EaseFunc(EasingCurve::new(
+                            enemy_position,
+                            player_position,
+                            EaseFunction::BackIn,
+                        )),
+                    ))
+                    .remove::<Moving>();
+            }
+
+            if maybe_ground.is_some() {
+                commands
+                    .entity(enemy)
+                    .insert((
+                        Attacking,
+                        TargetPosition {
+                            position: player_position,
+                        },
+                    ))
+                    .remove::<Moving>();
+            }
         }
     }
 }
+
+// fn fire_shot_at_player(
+//     mut commands: Commands,
+// ) {
+
+// }
 
 fn move_to_player(
     mut commands: Commands,
     mut enemy_query: Query<
         (Entity, &mut Transform, &mut Countdown, &EaseFunc<Vec2>),
-        (With<Enemy>, With<Attacking>, Without<Dead>),
+        (With<Enemy>, With<Flying>, With<Attacking>, Without<Dead>),
     >,
     player: Single<Entity, With<Player>>,
     time: Res<Time>,
