@@ -1,13 +1,6 @@
 use crate::{
-    assets::AssetsState,
-    audio::{sound_effect, SfxAssets},
-    components::*,
-    constants::SCREEN_HALF_WIDTH,
-    events::BlastEvent,
-    menus::Menu,
-    screens::Screen,
-    vfx::{explosion::create_explosion_vfx, VfxAssets},
-    AppSystems, GameplaySystems, PausableSystems,
+    assets::AssetsState, components::*, events::DamageEvent, AppSystems, GameplaySystems,
+    PausableSystems,
 };
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
