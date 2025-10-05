@@ -24,3 +24,26 @@ pub struct BulletAssets {
     #[asset(image(sampler(filter = nearest)))]
     pub bullet: Handle<Image>,
 }
+
+pub fn create_bullet(
+    bullet_assets: &BulletAssets,
+    target_position: Vec2,
+    start_position: Vec2,
+    speed: f32,
+) -> impl Bundle {
+    let movement = (target_position - start_position).normalize();
+    let angle = Vec2::Y.angle_to(movement);
+    let transform = Transform::from_translation(start_position.extend(0.0))
+        .with_rotation(Quat::from_rotation_z(angle));
+    (
+        Name::new("Enemy"),
+        MovementConfig::from_vec2(movement).with_speed(speed),
+        Moving,
+        Sprite {
+            image: bullet_assets.bullet.clone(),
+            custom_size: Some(Vec2::splat(10.0 * 3.0)),
+            ..default()
+        },
+        transform,
+    )
+}
