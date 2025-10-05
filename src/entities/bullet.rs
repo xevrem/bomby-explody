@@ -48,3 +48,24 @@ pub fn create_bullet(
         transform,
     )
 }
+
+pub fn check_bullet_hit_player(
+    mut commands: Commands,
+    bullet_query: Query<(Entity, &GlobalTransform), (With<Bullet>, Without<Player>)>,
+    player_query: Single<(Entity, &GlobalTransform), (With<Player>, Without<Bullet>)>,
+    mut damage_writer: EventWriter<DamageEvent>,
+) {
+    let player_pos = player_query.1.translation().xy();
+    for (bullet, bullet_pos) in bullet_query.iter() {
+        if bullet_pos.translation().xy().distance(player_pos) <= 15.0 {
+            // hit player
+            commands.entity(bullet).despawn();
+
+            // inform player of damage
+            damage_writer.write(DamageEvent {
+                target: player_query.0,
+                amount: 1,
+            });
+        }
+    }
+}
