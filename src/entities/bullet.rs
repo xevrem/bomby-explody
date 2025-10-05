@@ -8,6 +8,13 @@ use bevy_asset_loader::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<BulletAssets>(),
+    )
+    .add_systems(
+        Update,
+        (check_bullet_hit_player)
+            .in_set(AppSystems::Update)
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
     );
 }
 
