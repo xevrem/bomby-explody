@@ -1,9 +1,5 @@
 use crate::{
-    assets::AssetsState,
-    components::*,
-    constants::SCREEN_HALF_HEIGHT,
-    events::{DamageEvent, EnemyDiedEvent},
-    AppSystems, GameplaySystems, PausableSystems,
+    assets::AssetsState, components::*, constants::SCREEN_HALF_HEIGHT, entities::bullet::{create_bullet, BulletAssets}, events::{DamageEvent, EnemyDiedEvent}, AppSystems, GameplaySystems, PausableSystems
 };
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -19,6 +15,7 @@ pub(super) fn plugin(app: &mut App) {
             handle_dead,
             switch_to_attack_player,
             move_to_player,
+            fire_shot_at_player,
         )
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
@@ -227,17 +224,45 @@ fn switch_to_attack_player(
     }
 }
 
-// fn fire_shot_at_player(
-//     mut commands: Commands,
-// ) {
+fn fire_shot_at_player(
+    mut commands: Commands,
+    mut enemy_query: Query<
+        (Entity, &GlobalTransform, &TargetPosition, &mut AnimationConfig, &mut Sprite),
+        (With<Enemy>, With<Ground>, With<Attacking>, Without<Dead>),
+        >,
+    bullet_assets: Res<BulletAssets>,
+) {
+    //
+    for (enemy, spawn_pos, target_pos, mut anim_config, mut sprite) in enemy_query.iter_mut() {
+        commands.spawn(
+            create_bullet(
+                &bullet_assets,
+                target_pos.position,
+                spawn_pos.translation().xy(),
+                300.0
+            )
+        );
 
-// }
+        anim_config.index = 17 * 4;
+        anim_config.fps = 4;
+        anim_config.timer = anim_config.timer_from_self_fps();
+        if let Some(atlas) = &mut sprite.texture_atlas {
+            atlas.index = anim_config.index;
+        }
+        commands
+            .entity(enemy)
+            .remove::<Attacking>()
+            .insert_if_new(Dead {
+                timer: Timer::from_seconds(1.0, TimerMode::Once),
+            });
+    }
+}
 
 fn move_to_player(
     mut commands: Commands,
     mut enemy_query: Query<
         (Entity, &mut Transform, &mut Countdown, &EaseFunc<Vec2>),
-        (With<Enemy>, With<Flying>, With<Attacking>, Without<Dead>),
+        (With<Enemy>, With<Flying>, With<Attacking>, Without<Dead>, Without<Ground>),
     >,
     player: Single<Entity, With<Player>>,
     time: Res<Time>,
