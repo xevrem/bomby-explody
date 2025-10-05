@@ -36,7 +36,8 @@ pub fn create_bullet(
     let transform = Transform::from_translation(start_position.extend(0.0))
         .with_rotation(Quat::from_rotation_z(angle));
     (
-        Name::new("Enemy"),
+        Name::new("Bullet"),
+        Bullet,
         MovementConfig::from_vec2(movement).with_speed(speed),
         Moving,
         Sprite {
