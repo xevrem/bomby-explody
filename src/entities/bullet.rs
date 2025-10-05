@@ -41,7 +41,7 @@ pub fn create_bullet(
         Moving,
         Sprite {
             image: bullet_assets.bullet.clone(),
-            custom_size: Some(Vec2::splat(10.0 * 3.0)),
+            custom_size: Some(Vec2::splat(15.0 * 3.0)),
             ..default()
         },
         transform,
