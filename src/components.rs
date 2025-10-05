@@ -151,6 +151,11 @@ impl MovementConfig {
         self
     }
 
+    pub fn with_speed(mut self, value: f32) -> Self {
+        self.speed = value;
+        self
+    }
+
     // pub fn with_speed_as_screen_height_percent(mut self, value: f32) -> Self {
     //     self.speed = SCREEN_HEIGHT * value;
     //     self
