@@ -68,6 +68,9 @@ pub struct BombToss {
 }
 
 #[derive(Component)]
+pub struct Bullet;
+
+#[derive(Component)]
 pub struct Character;
 
 #[derive(Component)]
