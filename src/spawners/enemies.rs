@@ -31,7 +31,7 @@ pub fn create_enemy_spawner<T>(
     max_at_once: usize,
     rate: f32,
     max_speed: f32,
-    target_distance: TargetDistance
+    target_distance: TargetDistance,
 ) where
     T: Component + Clone,
 {
@@ -49,14 +49,21 @@ pub fn create_enemy_spawner<T>(
         Speed(max_speed),
         SubType::<T>(sub_type),
         StateScoped(Screen::Gameplay),
-        target_distance
+        target_distance,
     ));
 }
 
 fn tick_enemy_spawner<T>(
     mut commands: Commands,
     spawner_query: Query<
-        (&mut Spawner, &SubType<T>, &AssetIdx, &Speed, &TargetDistance, Entity),
+        (
+            &mut Spawner,
+            &SubType<T>,
+            &AssetIdx,
+            &Speed,
+            &TargetDistance,
+            Entity,
+        ),
         (With<Enemy>, Without<Done>),
     >,
     level: Single<Entity, With<Level>>,
@@ -67,7 +74,9 @@ fn tick_enemy_spawner<T>(
 ) where
     T: Component + Clone,
 {
-    for (mut spawner, sub_type, asset_index, max_speed, target_distance, spawner_ent) in spawner_query {
+    for (mut spawner, sub_type, asset_index, max_speed, target_distance, spawner_ent) in
+        spawner_query
+    {
         if enemy_query.iter().count() <= spawner.max_at_once
             && !spawner.all_spawned
             && spawner.spawned < spawner.limit
