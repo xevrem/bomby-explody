@@ -1,7 +1,13 @@
 use bevy::prelude::*;
+use bevy_prng::WyRand;
+use bevy_rand::global::GlobalEntropy;
+use rand::prelude::*;
 
 use crate::{
-    components::{AssetIdx, Dead, Enemy, Flying, Ground, Health, Spawner, Wave},
+    components::{
+        AssetIdx, Bomber, Dead, Enemy, Flying, Ground, Health, Spawner, TargetDistance, Wave,
+    },
+    constants::SCREEN_HALF_HEIGHT,
     events::EnemyDiedEvent,
     screens::Screen,
     spawners::enemies::create_enemy_spawner,
@@ -38,6 +44,7 @@ fn spawn_wave(
     mut commands: Commands,
     wave: Single<&Wave>,
     mut next_state: ResMut<NextState<WaveState>>,
+    mut entropy: GlobalEntropy<WyRand>,
 ) {
     // always create flying enemy
     create_enemy_spawner(
@@ -47,7 +54,10 @@ fn spawn_wave(
         wave.limit,
         wave.max_at_once,
         1.0,
-        0.3
+        0.3,
+        TargetDistance(
+            entropy.random_range(SCREEN_HALF_HEIGHT - 100.0..SCREEN_HALF_HEIGHT + 100.0),
+        ),
     );
 
     if wave.level > 1 {
@@ -58,7 +68,25 @@ fn spawn_wave(
             wave.limit / 2,
             wave.max_at_once / 2,
             1.0,
-            0.15
+            0.15,
+            TargetDistance(
+                entropy.random_range(SCREEN_HALF_HEIGHT - 100.0..SCREEN_HALF_HEIGHT + 100.0),
+            ),
+        );
+    }
+
+    if wave.level > 0 {
+        create_enemy_spawner(
+            &mut commands,
+            Bomber,
+            AssetIdx(32 * 4),
+            wave.limit / 3,
+            wave.max_at_once / 3,
+            1.0,
+            0.15,
+            TargetDistance(
+                entropy.random_range(SCREEN_HALF_HEIGHT - 100.0..SCREEN_HALF_HEIGHT + 100.0),
+            ),
         );
     }
 
