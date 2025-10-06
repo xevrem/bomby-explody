@@ -4,7 +4,10 @@ use bevy_rand::global::GlobalEntropy;
 use rand::prelude::*;
 
 use crate::{
-    components::{AssetIdx, Done, Enemy, Flying, Ground, Health, Level, Spawner, Speed, SubType, TargetDistance},
+    components::{
+        AssetIdx, Bomber, Done, Enemy, Flying, Ground, Health, Level, Spawner, Speed, SubType,
+        TargetDistance,
+    },
     constants::{SCREEN_HALF_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
     screens::Screen,
@@ -15,7 +18,11 @@ use crate::{
 pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (tick_enemy_spawner::<Flying>, tick_enemy_spawner::<Ground>)
+        (
+            tick_enemy_spawner::<Flying>,
+            tick_enemy_spawner::<Ground>,
+            tick_enemy_spawner::<Bomber>,
+        )
             .in_set(AppSystems::TickTimers)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
