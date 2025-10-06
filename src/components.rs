@@ -61,6 +61,9 @@ pub struct Bomb {
     pub timer: Timer,
 }
 
+#[derive(Component, Clone)]
+pub struct Bomber;
+
 #[derive(Component)]
 pub struct BombToss {
     pub ease: EasingCurve<Vec2>,
