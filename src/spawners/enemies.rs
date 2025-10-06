@@ -4,7 +4,7 @@ use bevy_rand::global::GlobalEntropy;
 use rand::prelude::*;
 
 use crate::{
-    components::{AssetIdx, Done, Enemy, Flying, Ground, Health, Level, Spawner, Speed, SubType},
+    components::{AssetIdx, Done, Enemy, Flying, Ground, Health, Level, Spawner, Speed, SubType, TargetDistance},
     constants::{SCREEN_HALF_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH},
     entities::enemy::{create_enemy, EnemyAssets},
     screens::Screen,
@@ -31,6 +31,7 @@ pub fn create_enemy_spawner<T>(
     max_at_once: usize,
     rate: f32,
     max_speed: f32,
+    target_distance: TargetDistance
 ) where
     T: Component + Clone,
 {
@@ -48,13 +49,14 @@ pub fn create_enemy_spawner<T>(
         Speed(max_speed),
         SubType::<T>(sub_type),
         StateScoped(Screen::Gameplay),
+        target_distance
     ));
 }
 
 fn tick_enemy_spawner<T>(
     mut commands: Commands,
     spawner_query: Query<
-        (&mut Spawner, &SubType<T>, &AssetIdx, &Speed, Entity),
+        (&mut Spawner, &SubType<T>, &AssetIdx, &Speed, &TargetDistance, Entity),
         (With<Enemy>, Without<Done>),
     >,
     level: Single<Entity, With<Level>>,
@@ -65,7 +67,7 @@ fn tick_enemy_spawner<T>(
 ) where
     T: Component + Clone,
 {
-    for (mut spawner, sub_type, asset_index, max_speed, spawner_ent) in spawner_query {
+    for (mut spawner, sub_type, asset_index, max_speed, target_distance, spawner_ent) in spawner_query {
         if enemy_query.iter().count() <= spawner.max_at_once
             && !spawner.all_spawned
             && spawner.spawned < spawner.limit
@@ -76,8 +78,6 @@ fn tick_enemy_spawner<T>(
                 let half_height: f32 = SCREEN_HEIGHT / 2.0 - 64.0;
                 // let speed: f32 = entropy.random_range(0.05..0.1);
                 let speed: f32 = entropy.random_range(0.05..max_speed.0);
-                let target_distance =
-                    entropy.random_range(SCREEN_HALF_HEIGHT - 100.0..SCREEN_HALF_HEIGHT + 100.0);
                 let y_position: f32 = entropy.random_range(-half_height..half_height);
                 let spawned = commands
                     .spawn(create_enemy(
@@ -92,7 +92,7 @@ fn tick_enemy_spawner<T>(
                         // move speed
                         speed,
                         // rough target engage distance
-                        target_distance,
+                        target_distance.0,
                     ))
                     .id();
                 commands.entity(level.entity()).add_child(spawned);
