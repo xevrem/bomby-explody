@@ -1,31 +1,39 @@
-#+title: Bevy Jam 6 - Bomby Explodo TODOs
+#+title: Bevy Jam 6 - Bomby Explody TODOs
 #+author: EVJ
 
 * Jam Theme - Chain Reaction
 * Concept
 enemies approach character or defense location
 player blows them up, getting more points for chain reactions
-* Features
-
-** bugs attacking base
-*** hit base, damage base
+* COMPLETE [3/3] Major Features
+CLOSED: [2025-10-09 Thu 16:11]
+** COMPLETE [2/2]bugs attacking base
+CLOSED: [2025-10-09 Thu 16:11]
+*** COMPLETE hit hero, damage hero
+CLOSED: [2025-10-09 Thu 16:09]
 *** COMPLETE spawned randomly opposite side to base
 CLOSED: [2025-09-21 Sun 21:06]
-** DOING bombs fired by user to blow up bugs
+** COMPLETE [2/2] bombs fired by user to blow up bugs
+CLOSED: [2025-10-09 Thu 16:11]
 *** COMPLETE bombs stun bugs
 CLOSED: [2025-09-21 Sun 21:07]
-*** bombs can chain for more damage
-** Survive as long as possible
-
-* Polish Features
-** more balanced dmg and health
-** DOING waves of enemies
+*** COMPLETE bombs can chain 
+CLOSED: [2025-10-09 Thu 16:11]
+** COMPLETE Survive as long as possible
+CLOSED: [2025-10-09 Thu 16:07]
+* DOING [1/9] Polish Features
+** TODO more balanced dmg and health
+** DOING [2/3] waves of enemies
 *** COMPLETE waves change number of spawns
 CLOSED: [2025-09-21 Sun 21:07]
 *** COMPLETE waves change types that spawn
-CLOSED: [2025-09-21 Sun 21:07]
-** DOING 1-2 additional mob types
-** limited num bombs
-** gain more bombs over time
-** when bugs hit base, with other bugs nearby, chain-asplode for moar dmg
-*** chain asplode does more damage!
+*** DOING waves setup settings for the spawners
+** DOING [1/3] 1-2 additional mob types
+*** COMPLETE Flying Mob
+CLOSED: [2025-10-09 Thu 16:06]
+*** PARTIAL Ground Mob Slime
+*** DOING Ground Mob Launcher
+** TODO limited num bombs
+** TODO gain more bombs over time
+** TODO when bugs hit base, with other bugs nearby, chain-asplode for moar dmg
+** TODO chain explosions does more damage!
