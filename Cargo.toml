@@ -22,8 +22,8 @@ bevy_asset_loader = { version = "0.23.0", features = [
         "2d",
         "progress_tracking",
 ] }
-avian2d = "0.3.0"
-bevy-tnua-avian2d = "0.5.0"
+# avian2d = "0.3.0"
+# bevy-tnua-avian2d = "0.5.0"
 bevy_rand = "0.11.0"
 bevy_prng = { version = "0.11.0", features = ["wyrand"] }
 rand = "0.9.1"
