@@ -8,6 +8,7 @@ pub(super) fn plugin(app: &mut App) {
         .register_type::<Explosion>()
         .register_type::<MovementConfig>()
         .register_type::<Spawner>()
+        .register_type::<TargetDistance>()
         .register_type::<Wave>()
         .register_type::<WillExplode>();
 }
@@ -225,7 +226,7 @@ pub struct Speed(pub f32);
 #[derive(Component)]
 pub struct SubType<T>(pub T) where T: Component + Clone;
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct TargetDistance(pub f32);
 
 #[derive(Component)]
