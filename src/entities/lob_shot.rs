@@ -26,10 +26,21 @@ pub struct LobShotAssets {
     pub lob_shot_layout: Handle<TextureAtlasLayout>,
 }
 
-pub fn create_lob_shot(assets: &LobShotAssets, spawn_pos: Vec2, target_pos: Vec2) -> impl Bundle {
+pub fn create_lob_shot(
+    assets: &LobShotAssets,
+    height: f32,
+    spawn_pos: Vec2,
+    target_pos: Vec2,
+) -> impl Bundle {
     (
         Name::new("Lob Shot"),
-        LobShot,
+        LobShot {
+            height,
+            timer: Timer::from_seconds(1.0, TimerMode::Once),
+            ease_pos: EasingCurve::new(spawn_pos, target_pos, EaseFunction::Linear),
+            ease_up: EasingCurve::new(0.0, 1.0, EaseFunction::CircularOut),
+            ease_down: EasingCurve::new(1.0, 0.0, EaseFunction::CircularIn),
+        },
         StateScoped(Screen::Gameplay),
         Sprite {
             image: assets.lob_shot.clone(),
@@ -49,6 +60,17 @@ pub fn create_lob_shot(assets: &LobShotAssets, spawn_pos: Vec2, target_pos: Vec2
     )
 }
 
-fn arc_lob_shot(mut commands: Commands) {
-    //
+fn arc_lob_shot(
+    mut query: Query<(&mut Transform, &mut LobShot)>,
+    time: Res<Time>,
+) {
+    // for (mut transform, config) in &mut query {
+    //     let unit_rate = time.delta_secs() * config.speed;
+    //     let delta = unit_rate * config.direction;
+    //     transform.translation += delta.extend(0.0);
+    // }
+
+    for (mut transform, lob_shot) in &mut query {
+        //
+    }
 }
