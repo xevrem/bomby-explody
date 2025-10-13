@@ -50,6 +50,11 @@ pub struct AssetIdx(pub usize);
 pub struct Attacking;
 
 #[derive(Component)]
+pub struct AttackTimer {
+    pub timer: Timer
+}
+
+#[derive(Component)]
 pub struct Background;
 
 #[derive(Component)]
