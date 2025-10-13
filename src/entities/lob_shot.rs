@@ -1,6 +1,5 @@
 use crate::{
-    assets::AssetsState, components::*, screens::Screen, AppSystems, GameplaySystems,
-    PausableSystems,
+    assets::AssetsState, components::*, events::DamageEvent, screens::Screen, AppSystems, GameplaySystems, PausableSystems
 };
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
