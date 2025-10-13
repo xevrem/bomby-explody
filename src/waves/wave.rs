@@ -84,10 +84,7 @@ fn spawn_wave(
             wave.max_at_once / 3,
             1.0,
             0.15,
-            TargetDistance(entropy.random_range(
-                SCREEN_WIDTH - SCREEN_HALF_HEIGHT - 100.0
-                    ..SCREEN_WIDTH - SCREEN_HALF_HEIGHT + 100.0,
-            )),
+            TargetDistance(1000.0),
         );
     }
 
