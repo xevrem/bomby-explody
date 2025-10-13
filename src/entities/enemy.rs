@@ -1,5 +1,13 @@
 use crate::{
-    assets::AssetsState, components::*, constants::SCREEN_HALF_HEIGHT, entities::bullet::{create_bullet, BulletAssets}, events::{DamageEvent, EnemyDiedEvent}, AppSystems, GameplaySystems, PausableSystems
+    assets::AssetsState,
+    components::*,
+    constants::SCREEN_HALF_HEIGHT,
+    entities::{
+        bullet::{create_bullet, BulletAssets},
+        lob_shot::{create_lob_shot, LobShotAssets},
+    },
+    events::{DamageEvent, EnemyDiedEvent},
+    AppSystems, GameplaySystems, PausableSystems,
 };
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -20,6 +28,13 @@ pub(super) fn plugin(app: &mut App) {
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
             .in_set(GameplaySystems),
+    )
+    .add_systems(
+        Update,
+        lob_shot_at_player
+            .in_set(AppSystems::TickTimers)
+            .in_set(PausableSystems)
+            .in_set(GameplaySystems),
     );
 }
 
@@ -31,6 +46,7 @@ pub struct EnemyAssets {
     #[asset(texture_atlas_layout(tile_size_x = 30, tile_size_y = 30, columns = 4, rows = 48))]
     layout: Handle<TextureAtlasLayout>,
 }
+
 pub fn create_enemy(
     enemy_type: impl Component,
     enemy_assets: &EnemyAssets,
@@ -171,6 +187,7 @@ fn switch_to_attack_player(
             &TargetDistance,
             Option<&Flying>,
             Option<&Ground>,
+            Option<&Bomber>,
         ),
         (
             With<Enemy>,
@@ -182,7 +199,7 @@ fn switch_to_attack_player(
     player: Single<&GlobalTransform, (With<Player>, Without<Enemy>)>,
 ) {
     let player_position = player.translation().xy();
-    for (enemy, enemy_trans, target_dist, maybe_flying, maybe_ground) in enemy_query {
+    for (enemy, enemy_trans, target_dist, maybe_flying, maybe_ground, maybe_bomber) in enemy_query {
         let enemy_position = enemy_trans.translation().xy();
         let distance = enemy_position.distance(player_position);
         // if distance <= SCREEN_HALF_HEIGHT {
@@ -220,6 +237,21 @@ fn switch_to_attack_player(
                     ))
                     .remove::<Moving>();
             }
+
+            if maybe_bomber.is_some() {
+                commands
+                    .entity(enemy)
+                    .insert((
+                        Attacking,
+                        AttackTimer {
+                            timer: Timer::from_seconds(1.0, TimerMode::Repeating),
+                        },
+                        TargetPosition {
+                            position: player_position,
+                        },
+                    ))
+                    .remove::<Moving>();
+            }
         }
     }
 }
@@ -227,21 +259,25 @@ fn switch_to_attack_player(
 fn fire_shot_at_player(
     mut commands: Commands,
     mut enemy_query: Query<
-        (Entity, &GlobalTransform, &TargetPosition, &mut AnimationConfig, &mut Sprite),
+        (
+            Entity,
+            &GlobalTransform,
+            &TargetPosition,
+            &mut AnimationConfig,
+            &mut Sprite,
+        ),
         (With<Enemy>, With<Ground>, With<Attacking>, Without<Dead>),
-        >,
+    >,
     bullet_assets: Res<BulletAssets>,
 ) {
     //
     for (enemy, spawn_pos, target_pos, mut anim_config, mut sprite) in enemy_query.iter_mut() {
-        commands.spawn(
-            create_bullet(
-                &bullet_assets,
-                target_pos.position,
-                spawn_pos.translation().xy(),
-                300.0
-            )
-        );
+        commands.spawn(create_bullet(
+            &bullet_assets,
+            target_pos.position,
+            spawn_pos.translation().xy(),
+            300.0,
+        ));
 
         anim_config.index = 17 * 4;
         anim_config.fps = 4;
@@ -258,11 +294,43 @@ fn fire_shot_at_player(
     }
 }
 
+fn lob_shot_at_player(
+    mut commands: Commands,
+    mut enemy_query: Query<
+        (&Transform, &TargetPosition, &mut AttackTimer),
+        (With<Enemy>, With<Bomber>, With<Attacking>, Without<Dead>),
+    >,
+    lob_assets: Res<LobShotAssets>,
+    timer: Res<Time>,
+) {
+    for (trans, target_pos, mut attack_timer) in &mut enemy_query {
+        //
+        if attack_timer.timer.just_finished() {
+            // spawn a lob
+            commands.spawn(create_lob_shot(
+                &lob_assets,
+                200.0,
+                trans.translation.xy(),
+                target_pos.position,
+            ));
+        } else {
+            // otherwise increment timer
+            attack_timer.timer.tick(timer.delta());
+        }
+    }
+}
+
 fn move_to_player(
     mut commands: Commands,
     mut enemy_query: Query<
         (Entity, &mut Transform, &mut Countdown, &EaseFunc<Vec2>),
-        (With<Enemy>, With<Flying>, With<Attacking>, Without<Dead>, Without<Ground>),
+        (
+            With<Enemy>,
+            With<Flying>,
+            With<Attacking>,
+            Without<Dead>,
+            Without<Ground>,
+        ),
     >,
     player: Single<Entity, With<Player>>,
     time: Res<Time>,
