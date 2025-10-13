@@ -20,6 +20,7 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(AssetCollection, Resource)]
 pub struct LobShotAssets {
+    #[asset(path = "images/vfx/Charge_Fire.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub lob_shot: Handle<Image>,
     #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 2))]
