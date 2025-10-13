@@ -202,7 +202,6 @@ fn switch_to_attack_player(
     for (enemy, enemy_trans, target_dist, maybe_flying, maybe_ground, maybe_bomber) in enemy_query {
         let enemy_position = enemy_trans.translation().xy();
         let distance = enemy_position.distance(player_position);
-        // if distance <= SCREEN_HALF_HEIGHT {
         if distance <= target_dist.0 {
             let time_to_attack = (distance / 200.0) / 2.0;
 
