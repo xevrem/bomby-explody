@@ -306,6 +306,7 @@ fn lob_shot_at_player(
     for (trans, target_pos, mut attack_timer) in &mut enemy_query {
         //
         if attack_timer.timer.just_finished() {
+            attack_timer.timer.reset();
             // spawn a lob
             commands.spawn(create_lob_shot(
                 &lob_assets,
