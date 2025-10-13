@@ -130,7 +130,13 @@ pub struct HealthLabel;
 pub struct Level;
 
 #[derive(Component)]
-pub struct LobShot;
+pub struct LobShot {
+    pub height: f32,
+    pub timer: Timer,
+    pub ease_pos: EasingCurve<Vec2>,
+    pub ease_up: EasingCurve<f32>,
+    pub ease_down: EasingCurve<f32>,
+}
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
