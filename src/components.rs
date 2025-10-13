@@ -129,6 +129,9 @@ pub struct HealthLabel;
 #[derive(Component)]
 pub struct Level;
 
+#[derive(Component)]
+pub struct LobShot;
+
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct MovementConfig {
