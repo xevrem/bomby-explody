@@ -7,7 +7,7 @@ use crate::{
     components::{
         AssetIdx, Bomber, Dead, Enemy, Flying, Ground, Health, Spawner, TargetDistance, Wave,
     },
-    constants::SCREEN_HALF_HEIGHT,
+    constants::{SCREEN_HALF_HEIGHT, SCREEN_WIDTH},
     events::EnemyDiedEvent,
     screens::Screen,
     spawners::enemies::create_enemy_spawner,
@@ -84,9 +84,10 @@ fn spawn_wave(
             wave.max_at_once / 3,
             1.0,
             0.15,
-            TargetDistance(
-                entropy.random_range(SCREEN_HALF_HEIGHT - 100.0..SCREEN_HALF_HEIGHT + 100.0),
-            ),
+            TargetDistance(entropy.random_range(
+                SCREEN_WIDTH - SCREEN_HALF_HEIGHT - 100.0
+                    ..SCREEN_WIDTH - SCREEN_HALF_HEIGHT + 100.0,
+            )),
         );
     }
 
