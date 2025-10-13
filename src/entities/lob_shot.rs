@@ -62,29 +62,31 @@ pub fn create_lob_shot(
 }
 
 fn arc_lob_shot(mut query: Query<(&mut Transform, &mut LobShot)>, time: Res<Time>) {
-    // for (mut transform, config) in &mut query {
-    //     let unit_rate = time.delta_secs() * config.speed;
-    //     let delta = unit_rate * config.direction;
-    //     transform.translation += delta.extend(0.0);
-    // }
-
-    for (mut transform, lob_shot) in &mut query {
-        let fraction = lob_shot.timer.fraction();
-        let mut new_pos = lob_shot.ease_pos.sample_clamped(fraction);
-
-        if fraction < 0.5 {
-            let up_frac = fraction / 0.5;
-            // going up
-            let up = lob_shot.ease_up.sample_clamped(up_frac) * lob_shot.height;
-            new_pos.y += up;
+    for (mut transform, mut lob_shot) in &mut query {
+        if lob_shot.timer.just_finished() {
+            // destroy
         } else {
-            // going down
-            let down_frac = (fraction - 0.5) / 0.5;
-            // going up
-            let down = lob_shot.ease_down.sample_clamped(down_frac) * lob_shot.height;
-            new_pos.y += down;
-        }
+            let fraction = lob_shot.timer.fraction();
+            let mut new_pos = lob_shot.ease_pos.sample_clamped(fraction);
 
-        transform.translation = new_pos.extend(0.0);
+            if fraction < 0.5 {
+                let up_frac = fraction / 0.5;
+                // going up
+                let up = lob_shot.ease_up.sample_clamped(up_frac) * lob_shot.height;
+                new_pos.y += up;
+            } else {
+                // going down
+                let down_frac = (fraction - 0.5) / 0.5;
+                // going up
+                let down = lob_shot.ease_down.sample_clamped(down_frac) * lob_shot.height;
+                new_pos.y += down;
+            }
+
+            // update transform
+            transform.translation = new_pos.extend(0.0);
+
+            // update timer
+            lob_shot.timer.tick(time.delta());
+        }
     }
 }
