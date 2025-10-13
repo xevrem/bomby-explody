@@ -60,10 +60,23 @@ pub fn create_lob_shot(
     )
 }
 
-fn arc_lob_shot(mut query: Query<(&mut Transform, &mut LobShot)>, time: Res<Time>) {
-    for (mut transform, mut lob_shot) in &mut query {
+fn arc_lob_shot(
+    mut commands: Commands,
+    mut query: Query<(Entity, &mut Transform, &mut LobShot), Without<Player>>,
+    player_query: Single<Entity, (With<Player>, Without<LobShot>)>,
+    mut damage_writer: EventWriter<DamageEvent>,
+    time: Res<Time>,
+) {
+    for (entity, mut transform, mut lob_shot) in &mut query {
         if lob_shot.timer.just_finished() {
             // destroy
+            commands.entity(entity).despawn();
+                        // inform player of damage
+            damage_writer.write(DamageEvent {
+                target: player_query.entity(),
+                amount: 1,
+            });
+
         } else {
             let fraction = lob_shot.timer.fraction();
             let mut new_pos = lob_shot.ease_pos.sample_clamped(fraction);
