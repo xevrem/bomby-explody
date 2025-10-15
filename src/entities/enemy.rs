@@ -238,7 +238,6 @@ fn switch_to_attack_player(
             }
 
             if maybe_bomber.is_some() {
-                // info!("bomber at {}, less than {}", distance, target_dist.0);
                 commands
                     .entity(enemy)
                     .insert((

@@ -126,7 +126,6 @@ fn place_bomb_on_click(
     if let Ok(location) =
         camera.viewport_to_world_2d(camera_trans, trigger.pointer_location.position)
     {
-        // info!("clicked here: {}", location);
         commands.spawn(create_bomb(
             &assets,
             location,
