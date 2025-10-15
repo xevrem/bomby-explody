@@ -47,9 +47,6 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(AssetCollection, Resource)]
 pub struct BombAssets {
-    // #[asset(path = "images/vfx/Charge_Fire.png")]
-    // #[asset(image(sampler(filter = nearest)))]
-    // pub charge: Handle<Image>,
     #[asset(path = "images/vfx/Lavaball.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub ball: Handle<Image>,
