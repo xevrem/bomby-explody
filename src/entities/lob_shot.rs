@@ -8,13 +8,13 @@ pub(super) fn plugin(app: &mut App) {
     app.configure_loading_state(
         LoadingStateConfig::new(AssetsState::LoadGameplay).load_collection::<LobShotAssets>(),
     )
-    .add_systems(
-        Update,
-        (arc_lob_shot)
-            .in_set(AppSystems::Update)
-            .in_set(PausableSystems)
-            .in_set(GameplaySystems),
-    );
+        .add_systems(
+            Update,
+            (arc_lob_shot)
+                .in_set(AppSystems::Update)
+                .in_set(PausableSystems)
+                .in_set(GameplaySystems),
+        );
 }
 
 #[derive(AssetCollection, Resource)]
@@ -71,7 +71,7 @@ fn arc_lob_shot(
         if lob_shot.timer.just_finished() {
             // destroy
             commands.entity(entity).despawn();
-                        // inform player of damage
+            // inform player of damage
             damage_writer.write(DamageEvent {
                 target: player_query.entity(),
                 amount: 1,
