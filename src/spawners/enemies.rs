@@ -95,8 +95,7 @@ fn tick_enemy_spawner<T>(
                 // let speed: f32 = entropy.random_range(0.05..0.1);
                 let speed: f32 = entropy.random_range(0.05..max_speed.0);
                 let y_position: f32 = entropy.random_range(-half_height..half_height);
-                let targ_dist: f32 =
-                    entropy.random_range(target_distance.0 - 100.0..target_distance.0 + 100.0);
+                let targ_dist: f32 = target_distance.0 + entropy.random_range(-50.0..50.0);
                 let spawned = commands
                     .spawn(create_enemy(
                         sub_type.0.clone(),
@@ -110,8 +109,7 @@ fn tick_enemy_spawner<T>(
                         // move speed
                         speed,
                         // rough target engage distance
-                        targ_dist
-                        // target_distance.0,
+                        targ_dist,
                     ))
                     .id();
                 commands.entity(level.entity()).add_child(spawned);
