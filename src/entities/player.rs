@@ -21,12 +21,6 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(AssetCollection, Resource)]
 pub struct CharacterAssets {
-    // #[asset(path = "images/character.png")]
-    // #[asset(image(sampler(filter = nearest)))]
-    // pub character: Handle<Image>,
-    // #[asset(texture_atlas_layout(tile_size_x = 48, tile_size_y = 48, columns = 4, rows = 4))]
-    // pub character_layout: Handle<TextureAtlasLayout>,
-
     #[asset(path = "images/character_idle.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub character_idle: Handle<Image>,
