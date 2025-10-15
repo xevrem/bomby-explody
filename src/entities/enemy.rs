@@ -183,7 +183,7 @@ fn switch_to_attack_player(
     enemy_query: Query<
         (
             Entity,
-            &GlobalTransform,
+            &Transform,
             &TargetDistance,
             Option<&Flying>,
             Option<&Ground>,
@@ -196,11 +196,11 @@ fn switch_to_attack_player(
             Without<Attacking>,
         ),
     >,
-    player: Single<&GlobalTransform, (With<Player>, Without<Enemy>)>,
+    player: Single<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
-    let player_position = player.translation().xy();
+    let player_position = player.translation.xy();
     for (enemy, enemy_trans, target_dist, maybe_flying, maybe_ground, maybe_bomber) in enemy_query {
-        let enemy_position = enemy_trans.translation().xy();
+        let enemy_position = enemy_trans.translation.xy();
         let distance = enemy_position.distance(player_position);
         if distance <= target_dist.0 {
             let time_to_attack = (distance / 200.0) / 2.0;
@@ -261,7 +261,7 @@ fn fire_shot_at_player(
     mut enemy_query: Query<
         (
             Entity,
-            &GlobalTransform,
+            &Transform,
             &TargetPosition,
             &mut AnimationConfig,
             &mut Sprite,
@@ -275,7 +275,7 @@ fn fire_shot_at_player(
         commands.spawn(create_bullet(
             &bullet_assets,
             target_pos.position,
-            spawn_pos.translation().xy(),
+            spawn_pos.translation.xy(),
             300.0,
         ));
 
