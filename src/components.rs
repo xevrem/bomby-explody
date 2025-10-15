@@ -73,7 +73,9 @@ pub struct Bomber;
 #[derive(Component)]
 pub struct BombToss {
     pub ease: EasingCurve<Vec2>,
-    pub bounce: EasingCurve<f32>,
+    pub bounce_up: EasingCurve<f32>,
+    pub bounce_down: EasingCurve<f32>,
+    pub height: f32,
 }
 
 #[derive(Component)]
