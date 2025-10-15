@@ -61,11 +61,9 @@ pub fn create_bomb(
     speed: f32,
     player_pos: Vec3,
 ) -> impl Bundle {
-    let mut start_pos = player_pos + Vec3::new(24.0, 0.0, 0.0);
+    let start_pos = player_pos + Vec3::new(24.0, 0.0, 0.0);
     let distance = start_pos.xy().distance(position);
-    let distance_frac = distance / SCREEN_HALF_WIDTH;
-    start_pos.y -= 100.0 * distance_frac;
-    let lerp_time = distance / speed;
+    let lerp_time = (distance / speed) / 2.0;
     (
         Name::new("Bomb"),
         AnimationConfig::new(0, 8, 6),
@@ -74,8 +72,10 @@ pub fn create_bomb(
             timer: Timer::from_seconds(timeout, TimerMode::Once),
         },
         BombToss {
+            height: 100.0,
             ease: EasingCurve::new(start_pos.xy(), position, EaseFunction::Linear),
-            bounce: EasingCurve::new(1.0, 0.0, EaseFunction::BounceOut),
+            bounce_up: EasingCurve::new(0.0, 1.0, EaseFunction::CircularOut),
+            bounce_down: EasingCurve::new(1.0, 0.0, EaseFunction::BounceOut),
         },
         // for target position lerp
         Countdown {
@@ -120,7 +120,7 @@ fn place_bomb_on_click(
     mut commands: Commands,
     assets: Res<BombAssets>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
-    player_query: Single<&GlobalTransform, With<Player>>,
+    player_query: Single<&Transform, With<Player>>,
 ) {
     let (camera, camera_trans) = *camera_query;
     if let Ok(location) =
@@ -131,12 +131,10 @@ fn place_bomb_on_click(
             &assets,
             location,
             2.75,
-            // 0.5,
-            500.0,
-            player_query.translation(),
+            200.0,
+            player_query.translation,
         ));
     }
-    // }
 }
 
 fn bomb_timer_countdown(
@@ -273,12 +271,17 @@ fn move_towards_target(
             commands.entity(entity).remove::<TargetPosition>();
             mark_bomb_for_explode(&mut commands, entity, 0.25);
         } else {
-            let distance_frac =
-                trans.translation.xy().distance(target_pos.position) / SCREEN_HALF_WIDTH;
-            let mut new_pos = bomb_toss.ease.sample_clamped(countdown.timer.fraction());
-            let bounce =
-                bomb_toss.bounce.sample_clamped(countdown.timer.fraction()) * 100.0 * distance_frac;
-            new_pos.y += bounce;
+            let fraction = countdown.timer.fraction();
+            let mut new_pos = bomb_toss.ease.sample_clamped(fraction);
+
+            if fraction < 0.25 {
+                let up_frac = fraction / 0.25;
+                new_pos.y += bomb_toss.bounce_up.sample_clamped(up_frac) * bomb_toss.height;
+            } else {
+                let down_frac = (fraction - 0.25) / 0.75;
+                new_pos.y += bomb_toss.bounce_down.sample_clamped(down_frac) * bomb_toss.height;
+            }
+
             trans.translation = new_pos.extend(0.0);
         }
     }
