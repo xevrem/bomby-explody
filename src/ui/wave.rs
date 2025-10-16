@@ -11,17 +11,17 @@ use crate::{
 };
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(WaveState::Announce), spawn_wave_screen)
+    app.add_systems(OnEnter(WaveState::Announce), spawn_wave_ui)
         .add_systems(
             Update,
-            wave_screen_fade.run_if(in_state(WaveState::Announce).and(in_state(Screen::Gameplay))),
+            wave_ui_fade.run_if(in_state(WaveState::Announce).and(in_state(Screen::Gameplay))),
         );
 }
 
 #[derive(Component)]
 struct WaveScreen;
 
-fn spawn_wave_screen(mut commands: Commands, wave_query: Single<&Wave>) {
+fn spawn_wave_ui(mut commands: Commands, wave_query: Single<&Wave>) {
     let level = wave_query.level;
     commands.spawn((
         WaveScreen,
@@ -35,7 +35,7 @@ fn spawn_wave_screen(mut commands: Commands, wave_query: Single<&Wave>) {
     ));
 }
 
-fn wave_screen_fade(
+fn wave_ui_fade(
     mut query: Single<(&mut Countdown, &Children), With<WaveScreen>>,
     mut child_query: Query<&mut TextColor, With<Text>>,
     mut next_state: ResMut<NextState<WaveState>>,
