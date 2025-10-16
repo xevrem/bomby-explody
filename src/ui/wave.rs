@@ -79,7 +79,7 @@ pub fn create_wave_count_ui(mut commands: Commands) {
             right: Val::Px(10.0),
             align_items: AlignItems::Start,
             justify_content: JustifyContent::End,
-            flex_direction: FlexDirection::Column,
+            flex_direction: FlexDirection::Row,
             row_gap: Val::Px(10.0),
             ..default()
         },
@@ -87,31 +87,24 @@ pub fn create_wave_count_ui(mut commands: Commands) {
         Pickable::IGNORE,
         GlobalZIndex(2),
         StateScoped(Screen::Gameplay),
-        children![(
-            Name::new("wave ui grid"),
-            Node {
-                display: Display::Flex,
-                ..default()
-            },
-            children![
-                (
-                    widget::label("Enemies Remaining:"),
-                    Node {
-                        justify_self: JustifySelf::Start,
-                        ..default()
-                    }
-                ),
-                (
-                    widget::label(""),
-                    Node {
-                        justify_self: JustifySelf::End,
-                        ..default()
-                    },
-                    EnemyLabel,
-                    WaveLabel,
-                )
-            ]
-        )],
+        children![
+            (
+                widget::label("Enemies Remaining:"),
+                Node {
+                    justify_self: JustifySelf::Start,
+                    ..default()
+                }
+            ),
+            (
+                widget::label(""),
+                Node {
+                    justify_self: JustifySelf::End,
+                    ..default()
+                },
+                EnemyLabel,
+                WaveLabel,
+            )
+        ],
     ));
 }
 
