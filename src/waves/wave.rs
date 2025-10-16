@@ -77,7 +77,7 @@ fn spawn_wave(
         );
     }
 
-    if wave.level > 0 {
+    if wave.level > 3 {
         create_enemy_spawner(
             &mut commands,
             Bomber,
