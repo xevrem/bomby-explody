@@ -112,6 +112,9 @@ pub struct EaseFunc<T>(pub EasingCurve<T>);
 pub struct Enemy;
 
 #[derive(Component)]
+pub struct EnemyLabel;
+
+#[derive(Component)]
 pub struct Exploding;
 
 #[derive(Component, Reflect)]
@@ -250,6 +253,9 @@ pub struct Wave {
     pub limit_growth: usize,
     pub max_at_once: usize,
 }
+
+#[derive(Component)]
+pub struct WaveLabel;
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
