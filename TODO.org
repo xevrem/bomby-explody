@@ -17,7 +17,7 @@ CLOSED: [2025-09-21 Sun 21:06]
 CLOSED: [2025-10-09 Thu 16:11]
 *** COMPLETE bombs stun bugs
 CLOSED: [2025-09-21 Sun 21:07]
-*** COMPLETE bombs can chain 
+*** COMPLETE bombs can chain
 CLOSED: [2025-10-09 Thu 16:11]
 ** COMPLETE Survive as long as possible
 CLOSED: [2025-10-09 Thu 16:07]
