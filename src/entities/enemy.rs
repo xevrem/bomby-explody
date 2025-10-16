@@ -179,11 +179,13 @@ fn handle_dead(
 
 fn switch_to_attack_player(
     mut commands: Commands,
-    enemy_query: Query<
+    mut enemy_query: Query<
         (
             Entity,
             &Transform,
             &TargetDistance,
+            &mut AnimationConfig,
+            &mut Sprite,
             Option<&Flying>,
             Option<&Ground>,
             Option<&Bomber>,
@@ -198,7 +200,17 @@ fn switch_to_attack_player(
     player: Single<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
     let player_position = player.translation.xy();
-    for (enemy, enemy_trans, target_dist, maybe_flying, maybe_ground, maybe_bomber) in enemy_query {
+    for (
+        enemy,
+        enemy_trans,
+        target_dist,
+        mut anim_config,
+        mut sprite,
+        maybe_flying,
+        maybe_ground,
+        maybe_bomber,
+    ) in &mut enemy_query
+    {
         let enemy_position = enemy_trans.translation.xy();
         let distance = enemy_position.distance(player_position);
         if distance <= target_dist.0 {
@@ -237,12 +249,19 @@ fn switch_to_attack_player(
             }
 
             if maybe_bomber.is_some() {
+                anim_config.index = 33 * 4;
+                anim_config.fps = 2;
+                anim_config.timer = anim_config.timer_from_self_fps();
+                if let Some(atlas) = &mut sprite.texture_atlas {
+                    atlas.index = anim_config.index;
+                }
+
                 commands
                     .entity(enemy)
                     .insert((
                         Attacking,
                         AttackTimer {
-                            timer: Timer::from_seconds(1.0, TimerMode::Repeating),
+                            timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         },
                         TargetPosition {
                             position: player_position,
@@ -308,6 +327,7 @@ fn lob_shot_at_player(
             // spawn a lob
             commands.spawn(create_lob_shot(
                 &lob_assets,
+                200.0,
                 200.0,
                 trans.translation.xy(),
                 target_pos.position,

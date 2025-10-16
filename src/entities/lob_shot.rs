@@ -29,14 +29,17 @@ pub struct LobShotAssets {
 pub fn create_lob_shot(
     assets: &LobShotAssets,
     height: f32,
+    speed: f32,
     spawn_pos: Vec2,
     target_pos: Vec2,
 ) -> impl Bundle {
+    let distance = spawn_pos.distance(target_pos);
+    let travel_time = (distance / speed) / 2.0;
     (
         Name::new("Lob Shot"),
         LobShot {
             height,
-            timer: Timer::from_seconds(1.0, TimerMode::Once),
+            timer: Timer::from_seconds(travel_time, TimerMode::Once),
             ease_pos: EasingCurve::new(spawn_pos, target_pos, EaseFunction::Linear),
             ease_up: EasingCurve::new(0.0, 1.0, EaseFunction::CircularOut),
             ease_down: EasingCurve::new(1.0, 0.0, EaseFunction::CircularIn),
