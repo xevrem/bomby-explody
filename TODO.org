@@ -21,13 +21,15 @@ CLOSED: [2025-09-21 Sun 21:07]
 CLOSED: [2025-10-09 Thu 16:11]
 ** COMPLETE Survive as long as possible
 CLOSED: [2025-10-09 Thu 16:07]
-* DOING [1/7] Polish Features
+* DOING [1/8] Polish Features
 ** TODO more balanced dmg and health
-** DOING [2/3] waves of enemies
+** DOING [3/4] waves of enemies
 *** COMPLETE waves change number of spawns
 CLOSED: [2025-09-21 Sun 21:07]
 *** COMPLETE waves change types that spawn
-*** PARTIAL waves setup settings for the spawners
+*** COMPLETE waves setup settings for the spawners
+CLOSED: [2025-10-16 Thu 13:44]
+*** PARTIAL create ui for waves
 ** COMPLETE [3/3] 1-2 additional mob types
 CLOSED: [2025-10-16 Thu 09:43]
 *** COMPLETE Flying Mob
@@ -36,7 +38,8 @@ CLOSED: [2025-10-09 Thu 16:06]
 CLOSED: [2025-10-16 Thu 09:43]
 *** COMPLETE Ground Mob Launcher
 CLOSED: [2025-10-16 Thu 09:43]
-** TODO limited num bombs
+** TODO limited num bombs?
 ** TODO gain more bombs over time
 ** TODO when bugs hit base, with other bugs nearby, chain-asplode for moar dmg
 ** TODO chain explosions does more damage!
+** TODO audio for enemies
