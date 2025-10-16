@@ -1,7 +1,6 @@
 use crate::{
     assets::AssetsState,
     components::*,
-    constants::SCREEN_HALF_HEIGHT,
     entities::{
         bullet::{create_bullet, BulletAssets},
         lob_shot::{create_lob_shot, LobShotAssets},
@@ -156,7 +155,7 @@ fn handle_damaged(
 fn handle_dead(
     mut commands: Commands,
     mut dead_query: Query<(Entity, &mut Sprite, &mut Dead, Option<&Moving>), With<Enemy>>,
-    mut dead_writer: EventWriter<EnemyDiedEvent>,
+    mut _dead_writer: EventWriter<EnemyDiedEvent>,
     time: Res<Time>,
 ) {
     for (entity, mut sprite, mut dead, maybe_moving) in &mut dead_query {
