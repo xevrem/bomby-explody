@@ -24,7 +24,7 @@ pub fn create_player_hp_ui(mut commands: Commands) {
             left: Val::Px(10.0),
             align_items: AlignItems::Start,
             justify_content: JustifyContent::Start,
-            flex_direction: FlexDirection::Column,
+            flex_direction: FlexDirection::Row,
             row_gap: Val::Px(10.0),
             ..default()
         },
@@ -32,31 +32,24 @@ pub fn create_player_hp_ui(mut commands: Commands) {
         Pickable::IGNORE,
         GlobalZIndex(2),
         StateScoped(Screen::Gameplay),
-        children![(
-            Name::new("hp ui grid"),
-            Node {
-                display: Display::Flex,
-                ..default()
-            },
-            children![
-                (
-                    widget::label("Health:"),
-                    Node {
-                        justify_self: JustifySelf::Start,
-                        ..default()
-                    }
-                ),
-                (
-                    widget::label("100"),
-                    Node {
-                        justify_self: JustifySelf::End,
-                        ..default()
-                    },
-                    PlayerLabel,
-                    HealthLabel,
-                )
-            ]
-        )],
+        children![
+            (
+                widget::label("Health:"),
+                Node {
+                    justify_self: JustifySelf::Start,
+                    ..default()
+                }
+            ),
+            (
+                widget::label("100"),
+                Node {
+                    justify_self: JustifySelf::End,
+                    ..default()
+                },
+                PlayerLabel,
+                HealthLabel,
+            )
+        ],
     ));
 }
 
