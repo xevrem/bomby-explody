@@ -1,4 +1,3 @@
-
 use bevy::prelude::*;
 
 use crate::{
@@ -18,16 +17,25 @@ pub(super) fn plugin(app: &mut App) {
 
 pub fn create_player_hp_ui(mut commands: Commands) {
     commands.spawn((
-        widget::ul_ui_root("Player HP UI"),
+        Name::new("Player HP UI"),
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(10.0),
+            left: Val::Px(10.0),
+            align_items: AlignItems::Start,
+            justify_content: JustifyContent::Start,
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(10.0),
+            ..default()
+        },
+        // Don't block picking events for other UI roots.
+        Pickable::IGNORE,
         GlobalZIndex(2),
         StateScoped(Screen::Gameplay),
         children![(
             Name::new("hp ui grid"),
             Node {
-                display: Display::Grid,
-                row_gap: Val::Px(10.0),
-                column_gap: Val::Px(10.0),
-                grid_template_columns: RepeatedGridTrack::px(2, 100.0),
+                display: Display::Flex,
                 ..default()
             },
             children![
@@ -41,7 +49,7 @@ pub fn create_player_hp_ui(mut commands: Commands) {
                 (
                     widget::label("100"),
                     Node {
-                        justify_self: JustifySelf::Start,
+                        justify_self: JustifySelf::End,
                         ..default()
                     },
                     PlayerLabel,
