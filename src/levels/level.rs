@@ -42,7 +42,7 @@ pub fn spawn_level(
             StateScoped(Screen::Gameplay),
             children![
                 // FIXME: this is dev hp
-                create_player_character(&character_assets, 1000),
+                create_player_character(&character_assets, 10),
                 (
                     Name::new("Gameplay Music"),
                     music(level_assets.music.clone())
