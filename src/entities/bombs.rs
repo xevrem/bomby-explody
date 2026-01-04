@@ -260,7 +260,7 @@ fn move_towards_target(
             &mut Countdown,
             &BombToss,
         ),
-        With<Bomb>,
+        (With<Bomb>, Without<Exploding>, Without<WillExplode>),
     >,
     time: Res<Time>,
 ) {
