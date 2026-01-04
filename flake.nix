@@ -38,7 +38,7 @@
             rustPlatform.bindgenHook
           ];
           packages = with pkgs; [
-            taplo-lsp
+            taplo
           ];
 
           libInputs = buildInputs ++ nativeBuildInputs;
