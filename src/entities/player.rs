@@ -3,7 +3,7 @@ use bevy_asset_loader::prelude::*;
 
 use crate::{
     assets::AssetsState, components::*, constants::SCREEN_WIDTH, menus::Menu, screens::Screen,
-    AppSystems, GameplaySystems, PausableSystems, Pause,
+    waves::WaveState, AppSystems, GameplaySystems, PausableSystems, Pause,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -16,7 +16,8 @@ pub(super) fn plugin(app: &mut App) {
             .in_set(AppSystems::Update)
             .in_set(GameplaySystems)
             .in_set(PausableSystems),
-    );
+    )
+    .add_systems(OnEnter(WaveState::Announce), reset_player_hp);
 }
 
 #[derive(AssetCollection, Resource)]
@@ -37,7 +38,10 @@ pub fn create_player_character(assets: &CharacterAssets, health: i32) -> impl Bu
         AnimationConfig::new(start_index, 4, 4),
         Character,
         Damageable,
-        Health { current: health },
+        Health {
+            current: health,
+            max: health,
+        },
         Player,
         Sprite {
             image: assets.character_idle.clone(),
@@ -63,4 +67,8 @@ fn check_if_player_dead(
         next_menu.set(Menu::GameOver);
         next_pause.set(Pause(true));
     }
+}
+
+pub fn reset_player_hp(mut player_health: Single<&mut Health, (With<Player>, Without<Dead>)>) {
+    player_health.current = player_health.max;
 }

@@ -63,7 +63,7 @@ pub fn create_enemy(
         Damageable,
         Enemy,
         enemy_type,
-        Health { current: 1 },
+        Health { current: 1, max: 1 },
         MovementConfig::from_vec2(movement).with_speed_as_screen_width_percent(speed_percent),
         Moving,
         Sprite {
