@@ -22,7 +22,7 @@ CLOSED: [2025-10-09 Thu 16:11]
 ** COMPLETE Survive as long as possible
 CLOSED: [2025-10-09 Thu 16:07]
 * DOING [1/8] Polish Features
-** TODO more balanced dmg and health
+** DOING more balanced dmg and health
 ** DOING [3/4] waves of enemies
 *** COMPLETE waves change number of spawns
 CLOSED: [2025-09-21 Sun 21:07]
